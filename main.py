@@ -161,7 +161,7 @@ app.secret_key = "your_secret_key"
 
 # Configuration for Firebase
 config = {
-     'apiKey' : "AIzaSyDa-iB8wmpcfIl6ZZ4tshr9-C0VaLjJDd4",
+     'apiKey' : os.environ['firebase_api_key'],
       'authDomain' : "funny-eng-chatbot.firebaseapp.com",
       'databaseURL' : "https://funny-eng-chatbot-default-rtdb.firebaseio.com",
       'projectId' : "funny-eng-chatbot",
