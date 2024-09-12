@@ -362,58 +362,17 @@ def generateChatResponse(prompt):
 
     return answer
 
-'''
+
 #Rex response and count which uses cookie instead of session.
 user_prompt_count = {}
 
-
-#Rex response and count which uses cookie instead of session.
-
-@app.route('/rex', methods=['POST', 'GET'])
+@app.route('/chatbot', methods=['POST', 'GET'])
 def rex():
-    if request.method == 'POST':
-        prompt = request.form['prompt']
+    # Check if the user is logged in
+    if not session.get("is_logged_in", False):
+        # Redirect to login page if not logged in
+        return redirect(url_for('login'))
 
-        # Get the user's IP address (you may need additional setup for this)
-        user_ip = request.remote_addr
-
-        # Check if the user has a session cookie
-        if 'session_id' not in request.cookies:
-            # If not, create a new session ID and set the prompt count to 1
-            session_id = os.urandom(16).hex()
-            user_prompt_count[session_id] = 1
-        else:
-            # If yes, get the session ID
-            session_id = request.cookies.get('session_id')
-
-        # Get the prompt count for the user
-        prompt_count = user_prompt_count.get(session_id, 0)
-
-        # Check if the user has exceeded the daily limit
-        if prompt_count >= 3:
-            return jsonify({'answer': "NOTIFICATION!!!: Sorry, you've completed your 10 prompts for today."}), 200
-
-        # Generate the chat response
-        res = {}
-        res['answer'] = generateChatResponse(prompt)
-
-        # Update the user's prompt count
-        user_prompt_count[session_id] = prompt_count + 1
-
-        # Create a response object and set the session cookie
-        response = make_response(jsonify(res), 200)
-        response.set_cookie('session_id', session_id, expires=datetime.now() + timedelta(days=1))
-
-        return response
-
-    return render_template('rexhtml.html')
-'''
-
-
-user_prompt_count = {}
-
-@app.route('/rex', methods=['POST', 'GET'])
-def rex():
     if request.method == 'POST':
         prompt = request.form['prompt']
 
@@ -451,6 +410,8 @@ def rex():
 
 
 
+        
 
-app.run(debug= True, host='0.0.0.0', port=8080)
 
+
+app.run(debug= True, host='0.0.0.0', port=8000)
