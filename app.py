@@ -215,7 +215,7 @@ def check_password_strength(password):
 @app.route("/first-login", methods=["POST", "GET"])
 def first_login():
 
-    return render_template("first-login.html")
+    return render_template("first_login.html")
 
     
 # Route for login result
