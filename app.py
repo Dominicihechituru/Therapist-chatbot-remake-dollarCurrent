@@ -509,9 +509,7 @@ def rex():
             responseforsubs = make_response(jsonify(res), 200)
             return res
 
-        #else:
-            #return jsonify({'answer': "NOTIFICATION!!!: Error occured, please contact support for further assistance. <a href='https://www.google.com/'>Click here to continue with a weekly or monthly plan</a"}), 200
-        
+         
         '''
         if prompt_count >= 2 and check_subscription_status(subscription_code) == "completed":
             return jsonify({'answer': "NOTIFICATION!!!: Subscription completed. <a href='https://www.google.com/'>Click here to continue with a weekly or monthly plan</a"}), 200
