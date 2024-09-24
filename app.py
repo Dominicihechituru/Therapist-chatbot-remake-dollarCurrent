@@ -397,11 +397,15 @@ def check_subscription_status(subscription_code):
         data = response.json()
         # Check the message in the response
         if data.get('message') == "Subscription is active":
-            return True  # Subscription is still active
+            return "active" # Subscription is still active
+        if data.get('message') == "Subscription has been completed":
+            return "completed"
+        if data.get('message') == "Subscription has expired":
+            return "expired"
         else:
-            return False  # Subscription is not active or has another status
+            return "contactsupport"  # Subscription is not any of  the above or has another status
     else:
-        return False  # Handle cases where the internal API call failed
+        return "contactsupport"  # Handle cases where the internal API call failed
 
 
 
@@ -415,6 +419,22 @@ else:
     print("Subscription is not active. Deny access.")
 
     '''
+
+'''
+Subscription is active
+
+Subscription has been completed
+
+Subscription has expired
+
+Unknown subscription status
+
+Failed to retrieve subscription status
+
+Error connecting to Paystack API
+
+'''
+
 #endof paystack added
 #-------------------------------_---------
 
@@ -480,14 +500,25 @@ def rex():
         prompt_count = user_prompt_count.get(session_id, 0)
         res = {}
         # Check if the user has exceeded the daily limit
-        if prompt_count >= 3 and not check_subscription_status(subscription_code):
+        if prompt_count >= 2 and (check_subscription_status(subscription_code) != "active" and check_subscription_status(subscription_code) != "completed" and check_subscription_status(subscription_code) != "expired", check_subscription_status(subscription_code) != "contactsupport):
             return jsonify({'answer': "NOTIFICATION!!!: Sorry, it looks like you've hit your message limit. The free trial allows for only 7 messages. <a href='https://www.google.com/'>Click here to continue with a weekly or monthly plan</a"}), 200
-        if prompt_count >= 1 and check_subscription_status(subscription_code):
+        if prompt_count >= 2 and check_subscription_status(subscription_code) == "active":
             # Generate the chat response
             #resforsubs = {}
             res['answer'] = generateChatResponse(prompt)
             responseforsubs = make_response(jsonify(res), 200)
             return res
+        if prompt_count >= 2 and check_subscription_status(subscription_code) == "completed":
+            return jsonify({'answer': "NOTIFICATION!!!: Subscription completed. <a href='https://www.google.com/'>Click here to continue with a weekly or monthly plan</a"}), 200
+
+
+        if prompt_count >= 2 and check_subscription_status(subscription_code) == "expired":
+            return jsonify({'answer': "NOTIFICATION!!!: Your Subscription has expired! <a href='https://www.google.com/'>Click here to continue with a weekly or monthly plan</a"}), 200
+
+        if prompt_count >= 2 and check_subscription_status(subscription_code) == "expired":
+            return jsonify({'answer': "NOTIFICATION!!!: Error occured, please contact support for further assistance. <a href='https://www.google.com/'>Click here to continue with a weekly or monthly plan</a"}), 200
+            
+        
 
             '''
             #check if user has subscribed
