@@ -140,6 +140,7 @@ from datetime import datetime, timedelta
 #Added from another webapp
 import pyrebase
 import re
+import requests
 
 
 
@@ -338,6 +339,84 @@ def contactus():
 
 #---------------------------------
 
+#beginingof paystack added
+
+
+
+
+def get_subscription_by_email(email):
+    url = "https://api.paystack.co/subscription"
+    headers = {
+        "Authorization": "Bearer sk_test_9db0fe12af0a5cd5d29b29471888d5057b813522",  # Replace with your secret key
+        "Content-Type": "application/json"
+    }
+
+    # Call the subscription list endpoint
+    response = requests.get(url, headers=headers)
+
+    if response.status_code == 200:
+        # Get all subscriptions
+        subscriptions = response.json().get("data", [])
+
+        # Filter subscriptions by customer email
+        for subscription in subscriptions:
+            if subscription["customer"]["email"] == email:
+                return subscription.get("subscription_code")
+    else:
+        return None
+
+
+
+
+
+
+
+
+# Example usage
+subscription_code_from_email = get_subscription_by_email("xth@gmail.com")
+'''
+if subscription_code:
+    print(f"Subscription code: {subscription_code}")
+else:
+    print("No subscription found for this email")
+    '''
+
+
+
+
+def check_subscription_status(subscription_code):
+    # Construct the URL for the internal Flask route
+    url = f"https://check-paystack-api.onrender.com/check_subscription/{subscription_code}"
+
+    # Make the GET request
+    response = requests.get(url)
+
+    # Check if the request was successful
+    if response.status_code == 200:
+        # You get the response in JSON format
+        data = response.json()
+        # Check the message in the response
+        if data.get('message') == "Subscription is active":
+            return True  # Subscription is still active
+        else:
+            return False  # Subscription is not active or has another status
+    else:
+        return False  # Handle cases where the internal API call failed
+
+
+
+
+
+subscription_code = subscription_code_from_email
+'''
+if check_subscription_status(subscription_code):
+    print("Subscription is active. Allow access.")
+else:
+    print("Subscription is not active. Deny access.")
+
+    '''
+#endof paystack added
+#-------------------------------_---------
 
 
 conversation_history = [{"role": "system", "content": my_secret2}]
@@ -403,7 +482,18 @@ def rex():
         # Check if the user has exceeded the daily limit
         if prompt_count >= 10:
             return jsonify({'answer': "NOTIFICATION!!!: Sorry, it looks like you've hit your message limit. The free trial allows for only 7 messages. <a href='https://www.google.com/'>Click here to continue with a weekly or monthly plan</a"}), 200
+            #check if user has subscribed
+            if check_subscription_status(subscription_code):
+                # Generate the chat response
+                resforsubscribers = {}
+                resforsubscribers['answer'] = generateChatResponse(prompt)
+                
+            else:
+                return jsonify({'answer': "NOTIFICATION!!!: Sorry, your subscription has expired. <a href='https://www.google.com/'>Click here to continue with a weekly or monthly plan</a"}), 200
+            
 
+    
+    
         # Generate the chat response
         res = {}
         res['answer'] = generateChatResponse(prompt)
