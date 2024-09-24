@@ -523,7 +523,7 @@ def rex():
             '''
         
 
-            '''
+        '''
             #check if user has subscribed
             if check_subscription_status(subscription_code):
                 # Generate the chat response
