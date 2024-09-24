@@ -500,14 +500,14 @@ def rex():
         prompt_count = user_prompt_count.get(session_id, 0)
         res = {}
         # Check if the user has exceeded the daily limit
-        if prompt_count >= 2 and check_subscription_status(subscription_code) != "active":
+        if prompt_count >= 2 and not check_subscription_status(subscription_code):
             return jsonify({'answer': "NOTIFICATION!!!: Sorry, it looks like you've hit your message limit. The free trial allows for only 7 messages. <a href='https://www.google.com/'>Click here to continue with a weekly or monthly plan</a"}), 200
-        if prompt_count >= 2 and check_subscription_status(subscription_code) == "active":
+        if prompt_count >= 2 and check_subscription_status(subscription_code):
             # Generate the chat response
             #resforsubs = {}
             res['answer'] = generateChatResponse(prompt)
-            responseforsubs = make_response(jsonify(res), 200)
-            return res
+            response = make_response(jsonify(res), 200)
+            return response
 
          
         '''
