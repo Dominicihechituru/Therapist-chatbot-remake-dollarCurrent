@@ -485,8 +485,10 @@ def rex():
             #check if user has subscribed
             if check_subscription_status(subscription_code):
                 # Generate the chat response
-                resforsubscribers = {}
-                resforsubscribers['answer'] = generateChatResponse(prompt)
+                resforsubs = {}
+                resforsubs['answer'] = generateChatResponse(prompt)
+                responseforsubs = make_response(jsonify(resforsubs), 200)
+                return responseforsubs
                 
             else:
                 return jsonify({'answer': "NOTIFICATION!!!: Sorry, your subscription has expired. <a href='https://www.google.com/'>Click here to continue with a weekly or monthly plan</a"}), 200
