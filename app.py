@@ -480,7 +480,7 @@ def rex():
         prompt_count = user_prompt_count.get(session_id, 0)
 
         # Check if the user has exceeded the daily limit
-        if prompt_count >= 10:
+        if prompt_count >= 3:
             return jsonify({'answer': "NOTIFICATION!!!: Sorry, it looks like you've hit your message limit. The free trial allows for only 7 messages. <a href='https://www.google.com/'>Click here to continue with a weekly or monthly plan</a"}), 200
             #check if user has subscribed
             if check_subscription_status(subscription_code):
