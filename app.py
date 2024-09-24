@@ -397,17 +397,11 @@ def check_subscription_status(subscription_code):
         data = response.json()
         # Check the message in the response
         if data.get('message') == "Subscription is active":
-            return "active" # Subscription is still active
-        if data.get('message') == "Subscription has been completed":
-            return "completed"
-        if data.get('message') == "Subscription has expired":
-            return "expired"
+            return True  # Subscription is still active
         else:
-            return "contactsupport"  # Subscription is not any of  the above or has another status
+            return False  # Subscription is not active or has another status
     else:
-        return "contactsupport"  # Handle cases where the internal API call failed
-
-
+        return False  # Handle cases where the internal API call failed
 
 
 
