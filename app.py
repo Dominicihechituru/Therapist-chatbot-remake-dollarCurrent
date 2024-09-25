@@ -126,7 +126,7 @@ if __name__ == '__main__':
 '''
 
 
-
+'''
 
 #Code for Rex that uses openai API
 
@@ -559,3 +559,4 @@ def rex():
 
 
 app.run(debug= True, host='0.0.0.0', port=8000)
+'''
