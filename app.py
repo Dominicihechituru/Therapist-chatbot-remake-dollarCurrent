@@ -337,6 +337,11 @@ def aboutus():
 def contactus():
   return render_template('contactus.html')
 
+
+@app.route('/payment', methods=['POST', 'GET'])
+def payment():
+  return render_template('payment.html')
+
 #---------------------------------
 
 #beginingof paystack added
