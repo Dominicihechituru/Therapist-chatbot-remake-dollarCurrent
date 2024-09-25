@@ -1,1 +1,119 @@
-Hello payment page
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start; /* Pushes content slightly upwards */
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+            width: 100%;
+            gap: 20px; /* Adds space between the cards */
+        }
+
+        .card {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 300px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .card h2 {
+            margin-bottom: 20px;
+            font-size: 24px;
+            color: #333;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #28a745;
+            border: none;
+            color: white;
+            font-size: 18px;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            margin-top: 10px;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 20px;
+            }
+
+            button {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Add an image at the top, centered -->
+    <img src="your-image-url-here.jpg" alt="Top Image">
+
+    <div class="container">
+        <!-- First card -->
+        <div class="card">
+            <h2>Weekly Subscription</h2>
+            <h2>₦4,000</h2>
+            <button type="button" onclick="payWithPaystack()">Pay</button>
+        </div>
+
+        <!-- Second card -->
+        <div class="card">
+            <h2>Monthly Subscription</h2>
+            <h2>₦15,000</h2>
+            <button type="button" onclick="payWithPaystack()">Pay</button>
+        </div>
+    </div>
+
+    <script src="https://js.paystack.co/v1/inline.js"></script>
+    <script type="text/javascript">
+      function payWithPaystack(){
+        var handler = PaystackPop.setup({
+          key: 'pk_test_c4706f1b2ad704752356bc09a889ec5c4b9d93c5', // Replace with your Paystack public key
+          email: 'zmi@gmail.com',
+          amount: 50000, // Amount in kobo (500 naira)
+          plan: "PLN_f2w44y4tk384oxp",
+          ref: ''+Math.floor((Math.random() * 1000000000) + 1), // Transaction reference
+
+          callback: function(response){
+            console.log(response);
+          },
+          onClose: function(){
+            alert('Transaction was not completed.');
+          }
+        });
+        handler.openIframe();
+      }
+    </script>
+</body>
+</html>
