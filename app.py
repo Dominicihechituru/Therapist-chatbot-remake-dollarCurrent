@@ -1,102 +1,106 @@
-# Importing necessary modules
 from flask import Flask, render_template, jsonify, request, make_response, redirect, session, url_for
 import os
+from hugchat import hugchat
+from hugchat.login import Login
 from datetime import datetime
-import pyrebase
+import requests
 
-# Configuration for Firebase
-config = {
-    'apiKey': os.environ['firebase_api_key'],
-    'authDomain': "funny-eng-chatbot.firebaseapp.com",
-    'databaseURL': "https://funny-eng-chatbot-default-rtdb.firebaseio.com",
-    'projectId': "funny-eng-chatbot",
-    'storageBucket': "funny-eng-chatbot.appspot.com",
-    'messagingSenderId': "649383467646",
-    'appId': "1:649383467646:web:9155941c081d23ec44162f",
-    'measurementId': "G-6WX7ERK5R8"
-}
-
-# Initialize Firebase
-firebase = pyrebase.initialize_app(config)
-db = firebase.database()
-
-# Flask app setup
-app = Flask('app')
+# Initialize the app
+app = Flask(__name__)
 app.secret_key = "your_secret_key"
 
-conversation_history = [{"role": "system", "content": os.environ['pidginprompt']}]
+# HugChat login
+signin = os.environ['signin']
+password = os.environ['password']
+mybestcontextprompt = os.environ['pidginprompt']
+my_secret2 = "You are a pidgin English AI"
 
-# Function to generate chat response (using your chatbot or openai)
+# Hugging Face Login
+sign = Login(signin, password)
+cookies = sign.login()
+chatbot = hugchat.ChatBot(cookies=cookies.get_dict())
+
+# Paystack API functions
+def get_subscription_by_email(email):
+    url = "https://api.paystack.co/subscription"
+    headers = {
+        "Authorization": "Bearer sk_test_9db0fe12af0a5cd5d29b29471888d5057b813522",  # Replace with your secret key
+        "Content-Type": "application/json"
+    }
+    response = requests.get(url, headers=headers)
+    if response.status_code == 200:
+        subscriptions = response.json().get("data", [])
+        for subscription in subscriptions:
+            if subscription["customer"]["email"] == email:
+                return subscription.get("subscription_code")
+    return None
+
+def check_subscription_status(subscription_code):
+    url = f"https://check-paystack-api.onrender.com/check_subscription/{subscription_code}"
+    response = requests.get(url)
+    if response.status_code == 200:
+        data = response.json()
+        if data.get('message') == "Subscription is active":
+            return True
+    return False
+
+# Handle chat with prompt limit
+user_prompt_count = {}
+conversation_history = [{"role": "system", "content": my_secret2}]
+
+def parla(context, question, creativity):
+    prompt = "Answer the question based on the following context:" + context + "\n\nQuestion: " + question
+    return chatbot.chat(prompt, temperature=float(creativity))
+
 def generateChatResponse(prompt):
-    # Add the user's new question to conversation history
+    messages = conversation_history
     user_message = {"role": "user", "content": prompt}
-    conversation_history.append(user_message)
-
-    # Dummy response for illustration (replace with actual chat logic)
-    response = "This is a dummy response."
-
-    # Store the bot's response in the conversation history
-    bot_message = {"role": "assistant", "content": response}
+    messages.append(user_message)
+    response = parla(mybestcontextprompt, prompt, 2.0)
+    try:
+        answer = response
+    except:
+        answer = "Oops! Try again later"
+    bot_message = {"role": "assistant", "content": answer}
     conversation_history.append(bot_message)
+    return answer
 
-    return response
-
-# Route for the chatbot
 @app.route('/chatbot', methods=['POST', 'GET'])
-def chatbot():
-    # Check if user is logged in
+def rex():
     if not session.get("is_logged_in", False):
         return redirect(url_for('login'))
 
     if request.method == 'POST':
         prompt = request.form['prompt']
-        email = session['email']
-
-        # Retrieve user data from Firebase
-        user_data = db.child("users").child(session['uid']).get().val()
-
-        # Check if the user has a record of free prompts used
-        if 'free_prompts_used' not in user_data:
-            free_prompts_used = 0
+        if 'session_id' not in session:
+            session_id = os.urandom(16).hex()
+            session['session_id'] = session_id
+            user_prompt_count[session_id] = 1
         else:
-            free_prompts_used = user_data['free_prompts_used']
+            session_id = session['session_id']
 
-        # Check if the user has used 2 free prompts
-        if free_prompts_used >= 2:
-            return jsonify({'answer': "You've reached your free prompt limit. Please subscribe to continue."}), 200
+        prompt_count = user_prompt_count.get(session_id, 0)
+        res = {}
 
-        # Generate chat response
-        response = generateChatResponse(prompt)
+        subscription_code = get_subscription_by_email(session["email"])
 
-        # Increment the free prompt count and update Firebase
-        free_prompts_used += 1
-        db.child("users").child(session['uid']).update({"free_prompts_used": free_prompts_used})
+        # Check if user has hit the free limit and subscription status
+        if prompt_count >= 2 and not check_subscription_status(subscription_code):
+            return jsonify({
+                'answer': "NOTIFICATION!: Sorry, you've hit your free message limit or your subscription has expired. <a href='/payment'>Click here to subscribe</a>"
+            }), 200
 
-        return jsonify({'answer': response}), 200
+        # Handle subscription
+        if check_subscription_status(subscription_code) or prompt_count < 2:
+            res['answer'] = generateChatResponse(prompt)
+            user_prompt_count[session_id] = prompt_count + 1
+            return make_response(jsonify(res), 200)
 
     return render_template('rexhtml.html')
 
-# User login (for demonstration purposes)
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    if request.method == 'POST':
-        # Simulate user login (replace with your Firebase auth)
-        session['is_logged_in'] = True
-        session['email'] = 'user@example.com'  # Replace with actual user email
-        session['uid'] = 'some-unique-user-id'  # Replace with actual user UID
+@app.route('/payment', methods=['POST', 'GET'])
+def payment():
+    return render_template('payment.html')
 
-        # Initialize user data in Firebase if it doesn't exist
-        user_data = db.child("users").child(session['uid']).get().val()
-        if not user_data:
-            db.child("users").child(session['uid']).set({
-                "email": session['email'],
-                "free_prompts_used": 0
-            })
-
-        return redirect(url_for('chatbot'))
-
-    return render_template('login.html')
-
-# Run the Flask app
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=8000)
