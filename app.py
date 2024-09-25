@@ -378,7 +378,7 @@ def get_subscription_by_email(email):
 
 
 # Example usage
-subscription_code_from_email = get_subscription_by_email("litzkonith@gmail.com")
+subscription_code_from_email = get_subscription_by_email("ih@gmail.com")
 '''
 if subscription_code:
     print(f"Subscription code: {subscription_code}")
