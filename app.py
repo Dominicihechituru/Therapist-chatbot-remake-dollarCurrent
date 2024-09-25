@@ -1,4 +1,4 @@
-from flask import Flask, render_template, jsonify, request, make_response, redirect, session, url_for
+from flask import Flask, render_template, jsonify, request, make_response, redirect, session, flash, abort, url_for
 import openai
 import os
 from datetime import datetime
@@ -6,25 +6,24 @@ import pyrebase
 import re
 import requests
 
-# Secret keys
 my_secret = os.environ['token']
 my_secret2 = os.environ['pidginprompt']
+
 openai.api_key = my_secret
 
-# Initialize Flask app
 app = Flask('app')
 app.secret_key = "your_secret_key"
 
 # Configuration for Firebase
 config = {
-     'apiKey' : os.environ['firebase_api_key'],
-     'authDomain' : "funny-eng-chatbot.firebaseapp.com",
-     'databaseURL' : "https://funny-eng-chatbot-default-rtdb.firebaseio.com",
-     'projectId' : "funny-eng-chatbot",
-     'storageBucket' : "funny-eng-chatbot.appspot.com",
-     'messagingSenderId' : "649383467646",
-     'appId' : "1:649383467646:web:9155941c081d23ec44162f",
-     'measurementId' : "G-6WX7ERK5R8"
+    'apiKey': os.environ['firebase_api_key'],
+    'authDomain': "funny-eng-chatbot.firebaseapp.com",
+    'databaseURL': "https://funny-eng-chatbot-default-rtdb.firebaseio.com",
+    'projectId': "funny-eng-chatbot",
+    'storageBucket': "funny-eng-chatbot.appspot.com",
+    'messagingSenderId': "649383467646",
+    'appId': "1:649383467646:web:9155941c081d23ec44162f",
+    'measurementId': "G-6WX7ERK5R8"
 }
 
 # Initialize Firebase
@@ -32,7 +31,6 @@ firebase = pyrebase.initialize_app(config)
 auth = firebase.auth()
 db = firebase.database()
 
-# Routes for login and signup
 @app.route("/")
 def login():
     return render_template("login.html")
@@ -51,7 +49,10 @@ def welcome():
 def check_password_strength(password):
     return re.match(r'^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,}$', password) is not None
 
-# Login route
+@app.route("/first-login", methods=["POST", "GET"])
+def first_login():
+    return render_template("first_login.html")
+
 @app.route("/result", methods=["POST", "GET"])
 def result():
     if request.method == "POST":
@@ -66,7 +67,8 @@ def result():
             data = db.child("users").get().val()
             if data and session["uid"] in data:
                 session["name"] = data[session["uid"]]["name"]
-                db.child("users").child(session["uid"]).update({"last_logged_in": datetime.now().strftime("%m/%d/%Y, %H:%M:%S")})
+                db.child("users").child(session["uid"]).update(
+                    {"last_logged_in": datetime.now().strftime("%m/%d/%Y, %H:%M:%S")})
             else:
                 session["name"] = "User"
             return redirect(url_for('welcome'))
@@ -79,7 +81,6 @@ def result():
         else:
             return redirect(url_for('login'))
 
-# Registration route
 @app.route("/register", methods=["POST", "GET"])
 def register():
     if request.method == "POST":
@@ -98,7 +99,7 @@ def register():
             session["email"] = user["email"]
             session["uid"] = user["localId"]
             session["name"] = name
-            data = {"name": name, "email": email, "prompt_count": 0, "last_logged_in": datetime.now().strftime("%m/%d/%Y, %H:%M:%S")}
+            data = {"name": name, "email": email, "last_logged_in": datetime.now().strftime("%m/%d/%Y, %H:%M:%S")}
             db.child("users").child(session["uid"]).set(data)
             return render_template("verify_email.html")
         except Exception as e:
@@ -110,37 +111,62 @@ def register():
         else:
             return redirect(url_for('signup'))
 
-# Logout route
+@app.route("/reset_password", methods=["GET", "POST"])
+def reset_password():
+    if request.method == "POST":
+        email = request.form["email"]
+        try:
+            auth.send_password_reset_email(email)
+            return render_template("reset_password_done.html")
+        except Exception as e:
+            print("Error occurred: ", e)
+            return render_template("reset_password.html", error="An error occurred. Please try again.")
+    else:
+        return render_template("reset_password.html")
+
 @app.route("/logout")
 def logout():
     db.child("users").child(session["uid"]).update({"last_logged_out": datetime.now().strftime("%m/%d/%Y, %H:%M:%S")})
     session["is_logged_in"] = False
     return redirect(url_for('login'))
 
-# Paystack Subscription Check Functions
-def get_subscription_by_email(email):
-    url = "https://api.paystack.co/subscription"
-    headers = {
-        "Authorization": "Bearer sk_test_9db0fe12af0a5cd5d29b29471888d5057b813522",
-        "Content-Type": "application/json"
-    }
-    response = requests.get(url, headers=headers)
-    if response.status_code == 200:
-        subscriptions = response.json().get("data", [])
-        for subscription in subscriptions:
-            if subscription["customer"]["email"] == email:
-                return subscription.get("subscription_code")
-    return None
+@app.route('/landing')
+def hello_world():
+    return render_template('index.html')
 
-def check_subscription_status(subscription_code):
-    url = f"https://check-paystack-api.onrender.com/check_subscription/{subscription_code}"
-    response = requests.get(url)
-    if response.status_code == 200:
-        data = response.json()
-        return data.get('message') == "Subscription is active"
-    return False
+@app.route('/privacypolicy')
+def privacypolicy():
+    return render_template('privacypolicy.html')
 
-# Chatbot Route with Prompt Limit
+@app.route('/aboutus')
+def aboutus():
+    return render_template('aboutus.html')
+
+@app.route('/contactus')
+def contactus():
+    return render_template('contactus.html')
+
+@app.route('/payment', methods=['POST', 'GET'])
+def payment():
+    return render_template('payment.html')
+
+conversation_history = [{"role": "system", "content": my_secret2}]
+
+def generateChatResponse(prompt):
+    messages = conversation_history
+    user_message = {"role": "user", "content": prompt}
+    messages.append(user_message)
+    response = openai.ChatCompletion.create(model="gpt-3.5-turbo", messages=messages)
+    try:
+        answer = response['choices'][0]['message']['content'].replace('\n', '<br>')
+    except:
+        answer = "Oops! Try again later"
+    bot_message = {"role": "assistant", "content": answer}
+    conversation_history.append(bot_message)
+    return answer
+
+user_prompt_count = {}
+
 @app.route('/chatbot', methods=['POST', 'GET'])
 def rex():
     if not session.get("is_logged_in", False):
@@ -149,53 +175,24 @@ def rex():
     if request.method == 'POST':
         prompt = request.form['prompt']
 
-        # Fetch user data from Firebase
-        user_data = db.child("users").child(session["uid"]).get().val()
-        if not user_data:
-            return jsonify({'answer': "Error: User data not found."}), 400
+        if 'session_id' not in session:
+            session_id = os.urandom(16).hex()
+            session['session_id'] = session_id
+            user_prompt_count[session_id] = 1
+        else:
+            session_id = session['session_id']
 
-        # Get the user's prompt count from Firebase, default to 0 if it doesn't exist
-        prompt_count = user_data.get('prompt_count', 0)
-
-        # Check if the user has exceeded the free prompt limit
-        if prompt_count >= 2:
-            # Check if the user has an active subscription
-            if not check_subscription_status(get_subscription_by_email(session["email"])):
-                return jsonify({'answer': "NOTIFICATION!: Sorry, you've hit your free message limit, or your subscription has expired. <a href='/payment'>Click here to subscribe</a>"}), 200
-
-        # Generate the chat response
+        prompt_count = user_prompt_count.get(session_id, 0)
         res = {}
+
+        if prompt_count >= 2:
+            return jsonify({'answer': "NOTIFICATION!: You've hit your free message limit. <a href='/payment'>Click here to subscribe</a>"}), 200
+
         res['answer'] = generateChatResponse(prompt)
-
-        # Increment the prompt count and update it in Firebase
-        prompt_count += 1
-        db.child("users").child(session["uid"]).update({"prompt_count": prompt_count})
-
-        # Create a response object
+        user_prompt_count[session_id] = prompt_count + 1
         response = make_response(jsonify(res), 200)
         return response
 
     return render_template('rexhtml.html')
 
-# Function to generate chat response using OpenAI
-conversation_history = [{"role": "system", "content": my_secret2}]
-
-def generateChatResponse(prompt):
-    messages = conversation_history
-    user_message = {"role": "user", "content": prompt}
-    messages.append(user_message)
-
-    response = openai.ChatCompletion.create(model="gpt-3.5-turbo", messages=messages)
-
-    try:
-        answer = response['choices'][0]['message']['content'].replace('\n', '<br>')
-    except:
-        answer = "Oops! Try again later"
-
-    bot_message = {"role": "assistant", "content": answer}
-    conversation_history.append(bot_message)
-
-    return answer
-
-# Run the Flask app
 app.run(debug=True, host='0.0.0.0', port=8000)
