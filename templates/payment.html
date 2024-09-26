@@ -104,13 +104,12 @@
   
       function payWithPaystack(){
         // Get the <p> element by its id
-var emaill = document.getElementById("emaill");
+var emailo = document.getElementById("emaill");
 
 // Get the text content inside the <p> tag
-var emaila = emaill.textContent;
+var emaila = emailo.innerText;
 
-// Display the content in the console
-console.log(text);
+
         var handler = PaystackPop.setup({
           key: 'pk_test_c4706f1b2ad704752356bc09a889ec5c4b9d93c5', // Replace with your Paystack public key
           email: emaila,
