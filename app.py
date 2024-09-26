@@ -145,6 +145,16 @@ def aboutus():
 @app.route('/contactus')
 def contactus():
     return render_template('contactus.html')
+    
+
+
+#Getting email from database for paystack and to pass to frontend
+email_for_paystack= db.child("users").child(user_uid).child("email").get().val()
+
+
+@app.route('/', methods=['POST', 'GET'])
+def index():
+    return render_template('payment.html', email=email_for_paystack)
 
 def get_subscription_by_email(email):
     url = "https://api.paystack.co/subscription"
@@ -160,7 +170,7 @@ def get_subscription_by_email(email):
                 return subscription.get("subscription_code")
     return None
 
-subscription_code_from_email = get_subscription_by_email("gith@gmail.com")
+subscription_code_from_email = get_subscription_by_email(email_for_paystack)
 
 def check_subscription_status(subscription_code):
     url = f"https://check-paystack-api.onrender.com/check_subscription/{subscription_code}"
