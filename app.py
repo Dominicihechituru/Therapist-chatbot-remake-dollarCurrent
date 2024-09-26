@@ -147,13 +147,11 @@ def contactus():
     return render_template('contactus.html')
     
 
-usr_uid = session['uid']
-#Getting email from database for paystack and to pass to frontend
-email_for_paystack= db.child("users").child(usr_uid).child("email").get().val()
-
 
 @app.route('/', methods=['POST', 'GET'])
 def index():
+    usr_uid = session['uid']
+    email_for_paystack= db.child("users").child(usr_uid).child("email").get().val()
     return render_template('payment.html', email=email_for_paystack)
 
 def get_subscription_by_email(email):
