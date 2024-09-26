@@ -147,9 +147,9 @@ def contactus():
     return render_template('contactus.html')
     
 
-
+usr_uid = session['uid']
 #Getting email from database for paystack and to pass to frontend
-email_for_paystack= db.child("users").child(user_uid).child("email").get().val()
+email_for_paystack= db.child("users").child(usr_uid).child("email").get().val()
 
 
 @app.route('/', methods=['POST', 'GET'])
