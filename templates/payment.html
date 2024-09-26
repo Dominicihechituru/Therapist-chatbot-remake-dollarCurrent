@@ -80,7 +80,7 @@
     <img src="your-image-url-here.jpg" alt="Top Image">
 
     <div class="container">
-        <input id="emaill" style="visibility: hidden" value="{{email}}">
+        <input id="myInput" style="visibility: hidden" value="{{email}}">
         <!-- First card -->
         <div class="card">
             <h2>Weekly Subscription</h2>
@@ -103,16 +103,12 @@
 
   
       function payWithPaystack(){
-        // Getb the <p> element by its id
-var emailo = document.getElementById("emaill");
-
-// Get the text content inside the <p> tag
-var emaila = emailo.innerText;
-
-
+        var inputElement = document.getElementById("myInput"); // Select the input element by ID
+       var inputValue = inputElement.value; // Get the value of the input element
+          
         var handler = PaystackPop.setup({
           key: 'pk_test_c4706f1b2ad704752356bc09a889ec5c4b9d93c5', // Replace with your Paystack public key
-          email: emaila,
+          email: inputValue,
           amount: 50000, // Amount in kobo (500 naira)
           plan: "PLN_f2w44y4tk384oxp",
           ref: ''+Math.floor((Math.random() * 1000000000) + 1), // Transaction reference
