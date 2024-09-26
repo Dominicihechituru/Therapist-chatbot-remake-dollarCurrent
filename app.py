@@ -148,8 +148,8 @@ def contactus():
     
 email_for_paystack=""
 
-@app.route('/', methods=['POST', 'GET'])
-def index():
+@app.route('/payment', methods=['POST', 'GET'])
+def payment():
     global email_for_paystack
     usr_uid = session['uid']
     email_for_paystack= db.child("users").child(usr_uid).child("email").get().val()
