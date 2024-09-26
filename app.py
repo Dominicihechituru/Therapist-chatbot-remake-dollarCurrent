@@ -274,8 +274,9 @@ def register():
             session["email"] = user["email"]
             session["uid"] = user["localId"]
             session["name"] = name
+            session["prompt_count_db"] = 0
             # Save user data
-            data = {"name": name, "email": email, "last_logged_in": datetime.now().strftime("%m/%d/%Y, %H:%M:%S")}
+            data = {"name": name, "email": email, "prompt_count_db": 0, "last_logged_in": datetime.now().strftime("%m/%d/%Y, %H:%M:%S")}
             db.child("users").child(session["uid"]).set(data)
             return render_template("verify_email.html")
             #return redirect(url_for('welcome'))
