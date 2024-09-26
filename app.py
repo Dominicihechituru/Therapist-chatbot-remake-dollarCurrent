@@ -168,8 +168,6 @@ def get_subscription_by_email(email):
             if subscription["customer"]["email"] == email:
                 return subscription.get("subscription_code")
     return None
-usrr_uid = session['uid']
-subscription_code_from_email = get_subscription_by_email(db.child("users").child(usrr_uid).child("email").get().val())
 
 def check_subscription_status(subscription_code):
     url = f"https://check-paystack-api.onrender.com/check_subscription/{subscription_code}"
@@ -181,8 +179,6 @@ def check_subscription_status(subscription_code):
         else:
             return False
     return False
-
-subscription_code = subscription_code_from_email
 
 conversation_history = [{"role": "system", "content": my_secret2}]
 
@@ -202,6 +198,11 @@ def generateChatResponse(prompt):
 # Updated `/chatbot` route
 @app.route('/chatbot', methods=['POST', 'GET'])
 def rex():
+    usrr_uid = session['uid']
+    subscription_code_from_email = get_subscription_by_email(db.child("users").child(usrr_uid).child("email").get().val())
+
+    subscription_code = subscription_code_from_email
+
     if not session.get("is_logged_in", False):
         return redirect(url_for('login'))
 
