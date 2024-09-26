@@ -169,7 +169,7 @@ def get_subscription_by_email(email):
                 return subscription.get("subscription_code")
     return None
 
-subscription_code_from_email = get_subscription_by_email(email_for_paystack)
+subscription_code_from_email = get_subscription_by_email("dominicihechituru@gmail.com")
 
 def check_subscription_status(subscription_code):
     url = f"https://check-paystack-api.onrender.com/check_subscription/{subscription_code}"
