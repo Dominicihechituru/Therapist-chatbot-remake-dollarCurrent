@@ -80,7 +80,7 @@
     <img src="your-image-url-here.jpg" alt="Top Image">
 
     <div class="container">
-        <p id="email" style="visibility: hidden">{{ email }}</p>
+        <p id="emaill" style="visibility: hidden">{{ email }}</p>
         <!-- First card -->
         <div class="card">
             <h2>Weekly Subscription</h2>
@@ -103,13 +103,13 @@
 
   
       function payWithPaystack(){
-        let inputElement = document.getElementById('email');
+        let inputElement = document.getElementById('emaill');
 
         // Step 2: Get the value from the input element
-        let email = inputElement.value;
+        let emaila = inputElement.value;
         var handler = PaystackPop.setup({
           key: 'pk_test_c4706f1b2ad704752356bc09a889ec5c4b9d93c5', // Replace with your Paystack public key
-          email: email,
+          email: emaila,
           amount: 50000, // Amount in kobo (500 naira)
           plan: "PLN_f2w44y4tk384oxp",
           ref: ''+Math.floor((Math.random() * 1000000000) + 1), // Transaction reference
