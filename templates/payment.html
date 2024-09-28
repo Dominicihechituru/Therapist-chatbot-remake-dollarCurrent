@@ -82,11 +82,11 @@
     <div class="container">
         <input id="myInput" style="visibility: hidden" value="{{email}}">
         <!-- First card -->
-        <div class="card">
+        <!--<div class="card">
             <h2>Weekly Subscription</h2>
             <h2>₦4,000</h2>
             <button type="button" onclick="payWithPaystack()">Pay</button>
-        </div>
+        </div>-->
 
         <!-- Second card -->
         <div class="card">
@@ -111,7 +111,7 @@
           email: inputValue,
           first_name: 'User',
           amount: 50000, // Amount in kobo (500 naira)
-          plan: "PLN_f2w44y4tk384oxp",
+          plan: "PLN_i4sio4l80ach5ec",
           ref: ''+Math.floor((Math.random() * 1000000000) + 1), // Transaction reference
 
           callback: function(response){
