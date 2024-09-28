@@ -198,8 +198,9 @@ def generateChatResponse(prompt):
 # Updated `/chatbot` route
 @app.route('/chatbot', methods=['POST', 'GET'])
 def rex():
-    usrr_uid = session['uid']
-    subscription_code_from_email = get_subscription_by_email(db.child("users").child(usrr_uid).child("email").get().val())
+    #usrr_uid = session['uid']
+    #subscription_code_from_email = get_subscription_by_email(db.child("users").child(usrr_uid).child("email").get().val())
+    subscription_code_from_email =
 
     subscription_code = subscription_code_from_email
 
