@@ -115,7 +115,10 @@
           ref: ''+Math.floor((Math.random() * 1000000000) + 1), // Transaction reference
 
           callback: function(response){
+            // Successful payment
             console.log(response);
+            // Automatically redirect to the '/show' Flask route after successful payment
+            window.location.href = "/chatbot";
           },
           onClose: function(){
             alert('Transaction was not completed.');
