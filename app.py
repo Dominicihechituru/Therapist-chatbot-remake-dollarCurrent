@@ -158,7 +158,7 @@ def payment():
 def get_subscription_by_email(email):
     url = "https://api.paystack.co/subscription"
     headers = {
-        "Authorization": "Bearer sk_test_9db0fe12af0a5cd5d29b29471888d5057b813522",
+        "Authorization": "Bearer sk_live_ca56f5de9a6ec2553c20792cfa92d61f8a2a815c",
         "Content-Type": "application/json"
     }
     response = requests.get(url, headers=headers)
