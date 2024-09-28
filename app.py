@@ -200,7 +200,8 @@ def generateChatResponse(prompt):
 def rex():
     #usrr_uid = session['uid']
     #subscription_code_from_email = get_subscription_by_email(db.child("users").child(usrr_uid).child("email").get().val())
-    subscription_code_from_email = session.get("email")
+    email = session.get("email")
+    subscription_code_from_email = get_subscription_by_email(email)
 
     subscription_code = subscription_code_from_email
 
