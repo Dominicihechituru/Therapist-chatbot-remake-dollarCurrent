@@ -87,31 +87,90 @@
         <div class="card">
             <h2>Daily Subscription</h2>
             <h2>₦699</h2>
-            <button type="button" onclick="payWithPaystack()">Pay</button>
+            <small>1 time payment</small>
+            <button type="button" onclick="payWithPaystackDaily()">Pay</button>
         </div>
         
         <!-- Second card -->
         <div class="card">
             <h2>Weekly Subscription</h2>
             <h2>₦3,999</h2>
-            <button type="button" onclick="payWithPaystack()">Pay</button>
+            <button type="button" onclick="payWithPaystackWeekly()">Pay</button>
         </div>
 
         <!-- Thord card -->
         <div class="card">
             <h2>Monthly Subscription</h2>
             <h2>₦14,999</h2>
-            <button type="button" onclick="payWithPaystack()">Pay</button>
+            <button type="button" onclick="payWithPaystackMonthly()">Pay</button>
         </div>
     </div>
 
     <script src="https://js.paystack.co/v1/inline.js"></script>
     <script type="text/javascript">
         // Step 1: Select the input element
-  
 
+      function payWithPaystackDaily(){
+        var inputElement = document.getElementById("myInput"); // Select the input element by ID
+       var inputValue = inputElement.value; // Get the value of the input element
+          
+        var handler = PaystackPop.setup({
+          key: 'pk_test_c4706f1b2ad704752356bc09a889ec5c4b9d93c5', // Replace with your Paystack public key
+          email: inputValue,
+          first_name: 'User',
+          amount: 50000, // Amount in kobo (500 naira)
+          plan: "PLN_f2w44y4tk384oxp",
+          ref: ''+Math.floor((Math.random() * 1000000000) + 1), // Transaction reference
+
+          callback: function(response){
+            // Successful payment
+            console.log(response);
+            // Automatically redirect to the '/show' Flask route after successful payment
+            window.location.href = "/chatbot";
+          },
+          onClose: function(){
+            alert('Transaction was not completed.');
+          }
+        });
+        handler.openIframe();
+      }
+
+
+
+
+        
+      function payWithPaystackWeekly(){
+        var inputElement = document.getElementById("myInput"); // Select the input element by ID
+       var inputValue = inputElement.value; // Get the value of the input element
+          
+        var handler = PaystackPop.setup({
+          key: 'pk_test_c4706f1b2ad704752356bc09a889ec5c4b9d93c5', // Replace with your Paystack public key
+          email: inputValue,
+          first_name: 'User',
+          amount: 50000, // Amount in kobo (500 naira)
+          plan: "PLN_f2w44y4tk384oxp",
+          ref: ''+Math.floor((Math.random() * 1000000000) + 1), // Transaction reference
+
+          callback: function(response){
+            // Successful payment
+            console.log(response);
+            // Automatically redirect to the '/show' Flask route after successful payment
+            window.location.href = "/chatbot";
+          },
+          onClose: function(){
+            alert('Transaction was not completed.');
+          }
+        });
+        handler.openIframe();
+      }
+
+
+
+
+
+        
   
-      function payWithPaystack(){
+      function payWithPaystackMonthly(){
         var inputElement = document.getElementById("myInput"); // Select the input element by ID
        var inputValue = inputElement.value; // Get the value of the input element
           
