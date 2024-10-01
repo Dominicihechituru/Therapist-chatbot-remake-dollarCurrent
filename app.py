@@ -179,6 +179,7 @@ def check_subscription_status(subscription_code):
         else:
             return False
     return False
+
 '''
 conversation_history = [{"role": "system", "content": my_secret2}]
 
