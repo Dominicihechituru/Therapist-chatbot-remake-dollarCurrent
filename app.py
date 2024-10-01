@@ -179,9 +179,9 @@ def check_subscription_status(subscription_code):
         else:
             return False
     return False
-
-#conversation_history = [{"role": "system", "content": my_secret2}]
 '''
+conversation_history = [{"role": "system", "content": my_secret2}]
+
 def generateChatResponse(prompt):
     messages = conversation_history
     user_message = {"role": "user", "content": prompt}
