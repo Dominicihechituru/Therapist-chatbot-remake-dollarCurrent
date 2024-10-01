@@ -194,7 +194,7 @@ def generateChatResponse(prompt):
     bot_message = {"role": "assistant", "content": answer}
     conversation_history.append(bot_message)
     return answer
-
+'''
 # Updated `/chatbot` route
 @app.route('/chatbot', methods=['POST', 'GET'])
 def rex():
@@ -232,6 +232,76 @@ def rex():
 
         # Generate the chat response
         res['answer'] = generateChatResponse(prompt)
+
+        # Increment the user's prompt count and update it in Firebase
+        try:
+            new_prompt_count = prompt_count + 1
+            db.child("users").child(user_uid).update({"prompt_count_db": new_prompt_count})
+        except Exception as e:
+            print(f"Error updating prompt count in Firebase: {e}")
+
+        response = make_response(jsonify(res), 200)
+        return response
+
+    return render_template('rexhtml.html')
+    '''
+
+@app.route('/chatbot', methods=['POST', 'GET'])
+def rex():
+    email = session.get("email")
+    subscription_code_from_email = get_subscription_by_email(email)
+
+    subscription_code = subscription_code_from_email
+
+    if not session.get("is_logged_in", False):
+        return redirect(url_for('login'))
+
+    if request.method == 'POST':
+        prompt = request.form['prompt']
+        user_uid = session['uid']  # Get the user's unique ID from the session
+
+        # Retrieve the user's prompt count from Firebase
+        try:
+            prompt_count = db.child("users").child(user_uid).child("prompt_count_db").get().val()
+            if prompt_count is None:
+                prompt_count = 0  # Set to 0 if no record exists yet
+        except Exception as e:
+            print(f"Error fetching prompt count from Firebase: {e}")
+            prompt_count = 0  # Default to 0 in case of an error
+
+        res = {}
+
+        # Check if the user has exceeded the daily limit
+        if prompt_count >= 2 and not check_subscription_status(subscription_code):
+            return jsonify({'answer': "NOTIFICATION!!!: Sorry, You've hit your free message limit, or your subscription has expired. <a href='https://decker-5ywk.onrender.com/payment'>Click here to continue with a weekly or monthly plan</a"}), 200
+        if prompt_count >= 2 and check_subscription_status(subscription_code):
+            res['answer'] = generateChatResponse(prompt)
+            response = make_response(jsonify(res), 200)
+            return response
+
+        # Initialize or retrieve conversation history from session
+        if 'conversation_history' not in session:
+            session['conversation_history'] = [{"role": "system", "content": my_secret2}]
+        
+        conversation_history = session['conversation_history']
+
+        # Generate the chat response
+        user_message = {"role": "user", "content": prompt}
+        conversation_history.append(user_message)
+        response = openai.ChatCompletion.create(model="gpt-3.5-turbo", messages=conversation_history)
+
+        try:
+            answer = response['choices'][0]['message']['content'].replace('\n', '<br>')
+        except:
+            answer = "Oops! Try again later"
+        
+        bot_message = {"role": "assistant", "content": answer}
+        conversation_history.append(bot_message)
+
+        # Save the updated conversation history back into the session
+        session['conversation_history'] = conversation_history
+
+        res['answer'] = answer
 
         # Increment the user's prompt count and update it in Firebase
         try:
