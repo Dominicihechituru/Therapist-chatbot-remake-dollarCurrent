@@ -233,74 +233,25 @@ os.environ['REPLICATE_API_TOKEN'] = my_secret
 
 # Updated generateChatResponse function to include conversation history
 
-def generateChatResponse(prompt):
-    # Initialize or retrieve the conversation history from the session
-    if 'conversation_history' not in session:
-        session['conversation_history'] = []
-
-    conversation_history = session['conversation_history']
-
-    # Append the current user message to the conversation history
-    user_message = {"role": "user", "content": prompt}
-    conversation_history.append(user_message)
-
-    # Build a full conversation history as a string
-    conversation_history_str = ""
-    for message in conversation_history:
-        if message['role'] == 'user':
-            conversation_history_str += f"User: {message['content']}\n"
-        elif message['role'] == 'assistant':
-            conversation_history_str += f"Assistant: {message['content']}\n"
-
-    # Add the new user prompt to the conversation and await assistant's response
-    conversation_history_str += f"User: {prompt}\nAssistant: "
-
-    # Prepare the input for the Llama 2 model
-    input = {
-        "top_p": 1,
-        "prompt": conversation_history_str,
-        "temperature": 0.5,
-        "max_new_tokens": 200,  # Can adjust based on response length needed
-    }
-
-    # Try to get a response from the Llama 2 API
-    try:
-        output = replicate.run(
-            "meta/llama-2-70b-chat",
-            input=input
-        )
-        # The output from the API needs to be combined into a single string
-        answer = "".join(output).replace('\n', '<br>')  # Formatting for HTML
-    except Exception as e:
-        print(f"Error: {e}")
-        answer = "Oops! Something went wrong. Please try again later."
-
-    # Append the assistant's response to the conversation history
-    bot_message = {"role": "assistant", "content": answer}
-    conversation_history.append(bot_message)
-
-    # Save the updated conversation history back to the session
-    session['conversation_history'] = conversation_history
-
-    return answer
 
 
 
 
-'''
+
+
 # Set Replicate API token
 os.environ['REPLICATE_API_TOKEN'] = my_secret
 
-conversation_history = [{"role": "system", "content": my_secret2}]
+conversation_history = [{"content": my_secret2}]
 
 # Updated generateChatResponse function to use Llama 2 API from Replicate
 def generateChatResponse(prompt):
     # Retrieve conversation history from session or initialize it if not found
     if 'conversation_history' not in session:
-        session['conversation_history'] = [{"role": "system", "content": my_secret2}]
+        session['conversation_history'] = [{"content": my_secret2}]
     
     conversation_history = session['conversation_history']
-    user_message = {"role": "user", "content": prompt}
+    user_message = {"content": prompt}
     conversation_history.append(user_message)
     
     # Prepare input for Llama 2 model
@@ -323,7 +274,7 @@ def generateChatResponse(prompt):
     except:
         answer = "Oops! Try again later"
     
-    bot_message = {"role": "assistant", "content": answer}
+    bot_message = {"content": answer}
     conversation_history.append(bot_message)
     
     # Save updated conversation history back to session
@@ -331,7 +282,6 @@ def generateChatResponse(prompt):
     
     return answer
 
-'''
 
 
 #*****endof chatgpt imported code
