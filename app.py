@@ -235,7 +235,9 @@ def generateChatResponse(prompt):
 os.environ['REPLICATE_API_TOKEN'] = my_secret
 
 # Updated generateChatResponse function to use Llama 2 API from Replicate
-def generateChatResponse(prompt):
+def generateChatResponse(qprompt):
+    context= "You are a helpful AI assistant your name is Decker"
+    prompt = "Answer the question based on the following context:"+context+"\n\nQuestion: "+qprompt
     # Retrieve conversation history from session or initialize it if not found
     if 'conversation_history' not in session:
         session['conversation_history'] = [{"role": "system", "content": my_secret2}]
