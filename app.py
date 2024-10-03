@@ -229,7 +229,61 @@ def generateChatResponse(prompt):
 #****begining of chatgpt imported code
 
 
+# Updated generateChatResponse function to include conversation history
+def generateChatResponse(prompt):
+    # Retrieve conversation history from session or initialize it if not found
+    if 'conversation_history' not in session:
+        session['conversation_history'] = [{"role": "system", "content": my_secret2}]
+    
+    conversation_history = session['conversation_history']
+    user_message = {"role": "user", "content": prompt}
+    conversation_history.append(user_message)
+    
+    # Build the conversation history into a single string
+    conversation_history_str = ""
+    for message in conversation_history:
+        if message['role'] == 'user':
+            conversation_history_str += f"User: {message['content']}\n"
+        elif message['role'] == 'assistant':
+            conversation_history_str += f"Assistant: {message['content']}\n"
+    
+    # Add the current prompt to the conversation
+    conversation_history_str += f"User: {prompt}\nAssistant: "
 
+    # Prepare input for Llama 2 model
+    input = {
+        "top_p": 1,
+        "prompt": conversation_history_str,  # Send the entire conversation history
+        "temperature": 0.5,
+        "max_new_tokens": 500,
+        "min_new_tokens": -1
+    }
+
+    # Generate response from Llama 2 API using Replicate
+    try:
+        output = replicate.run(
+            "meta/llama-2-70b-chat",
+            input=input
+        )
+        # Combine output into a single string
+        answer = "".join(output).replace('\n', '<br>')
+    except:
+        answer = "Oops! Try again later"
+    
+    # Store the assistant's response in the conversation history
+    bot_message = {"role": "assistant", "content": answer}
+    conversation_history.append(bot_message)
+    
+    # Save updated conversation history back to session
+    session['conversation_history'] = conversation_history
+    
+    return answer
+
+
+
+
+
+'''
 # Set Replicate API token
 os.environ['REPLICATE_API_TOKEN'] = my_secret
 
@@ -273,6 +327,7 @@ def generateChatResponse(prompt):
     
     return answer
 
+'''
 
 
 #*****endof chatgpt imported code
