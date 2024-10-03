@@ -232,55 +232,57 @@ def generateChatResponse(prompt):
 os.environ['REPLICATE_API_TOKEN'] = my_secret
 
 # Updated generateChatResponse function to include conversation history
+
 def generateChatResponse(prompt):
-    # Retrieve conversation history from session or initialize it if not found
+    # Initialize or retrieve the conversation history from the session
     if 'conversation_history' not in session:
-        session['conversation_history'] = [{"role": "system", "content": my_secret2}]
-    
+        session['conversation_history'] = []
+
     conversation_history = session['conversation_history']
+
+    # Append the current user message to the conversation history
     user_message = {"role": "user", "content": prompt}
     conversation_history.append(user_message)
-    
-    # Build the conversation history into a single string
+
+    # Build a full conversation history as a string
     conversation_history_str = ""
     for message in conversation_history:
         if message['role'] == 'user':
             conversation_history_str += f"User: {message['content']}\n"
         elif message['role'] == 'assistant':
             conversation_history_str += f"Assistant: {message['content']}\n"
-    
-    # Add the current prompt to the conversation
+
+    # Add the new user prompt to the conversation and await assistant's response
     conversation_history_str += f"User: {prompt}\nAssistant: "
 
-    # Prepare input for Llama 2 model
+    # Prepare the input for the Llama 2 model
     input = {
         "top_p": 1,
-        "prompt": conversation_history_str,  # Send the entire conversation history
+        "prompt": conversation_history_str,
         "temperature": 0.5,
-        "max_new_tokens": 500,
-        "min_new_tokens": -1
+        "max_new_tokens": 200,  # Can adjust based on response length needed
     }
 
-    # Generate response from Llama 2 API using Replicate
+    # Try to get a response from the Llama 2 API
     try:
         output = replicate.run(
             "meta/llama-2-70b-chat",
             input=input
         )
-        # Combine output into a single string
-        answer = "".join(output).replace('\n', '<br>')
-    except:
-        answer = "Oops! Try again later"
-    
-    # Store the assistant's response in the conversation history
+        # The output from the API needs to be combined into a single string
+        answer = "".join(output).replace('\n', '<br>')  # Formatting for HTML
+    except Exception as e:
+        print(f"Error: {e}")
+        answer = "Oops! Something went wrong. Please try again later."
+
+    # Append the assistant's response to the conversation history
     bot_message = {"role": "assistant", "content": answer}
     conversation_history.append(bot_message)
-    
-    # Save updated conversation history back to session
-    session['conversation_history'] = conversation_history
-    
-    return answer
 
+    # Save the updated conversation history back to the session
+    session['conversation_history'] = conversation_history
+
+    return answer
 
 
 
