@@ -232,7 +232,8 @@ def generateChatResponse(prompt):
 
 # Set Replicate API token
 os.environ['REPLICATE_API_TOKEN'] = my_secret
-#"r8_8rqk5poF7clkGv5ud4nJ4LbfDECdWF33nZGTl"
+
+conversation_history = [{"role": "system", "content": my_secret2}]
 
 # Updated generateChatResponse function to use Llama 2 API from Replicate
 def generateChatResponse(prompt):
