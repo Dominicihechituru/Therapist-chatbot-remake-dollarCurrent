@@ -228,6 +228,8 @@ def generateChatResponse(prompt):
 
 #****begining of chatgpt imported code
 
+# Set Replicate API token
+os.environ['REPLICATE_API_TOKEN'] = my_secret
 
 # Updated generateChatResponse function to include conversation history
 def generateChatResponse(prompt):
