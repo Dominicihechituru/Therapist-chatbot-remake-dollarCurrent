@@ -234,6 +234,43 @@ def generateChatResponse(prompt):
 # Set Replicate API token
 os.environ['REPLICATE_API_TOKEN'] = my_secret
 
+# Updated generateChatResponse function to use Llama 2 API from Replicate
+def generateChatResponse(prompt):
+    # Retrieve conversation history from session or initialize it if not found
+    if 'conversation_history' not in session:
+        session['conversation_history'] = [{"role": "system", "content": my_secret2}]
+    
+    conversation_history = session['conversation_history']
+    user_message = {"role": "user", "content": prompt}
+    conversation_history.append(user_message)
+    
+    # Prepare input for Llama 2 model
+    input = {
+        "top_p": 1,
+        "prompt": prompt,
+        "temperature": 0.5,
+        "max_new_tokens": 500,
+        "min_new_tokens": -1
+    }
+
+    # Generate response from Llama 2 API using Replicate
+    try:
+        output = replicate.run(
+            "meta/llama-2-70b-chat",
+            input=input
+        )
+        # Combine output into a single string
+        answer = "".join(output).replace('\n', '<br>')
+    except:
+        answer = "Oops! Try again later"
+    
+    bot_message = {"role": "assistant", "content": answer}
+    conversation_history.append(bot_message)
+    
+    # Save updated conversation history back to session
+    session['conversation_history'] = conversation_history
+    
+    return answer
 
 
 
