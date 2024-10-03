@@ -10,7 +10,7 @@ import replicate
 my_secret = os.environ['token']
 my_secret2 = os.environ['pidginprompt']
 
-openai.api_key = my_secret
+#openai.api_key = my_secret
 
 app = Flask('app')
 app.secret_key = "your_secret_key"
@@ -231,7 +231,8 @@ def generateChatResponse(prompt):
 
 
 # Set Replicate API token
-os.environ['REPLICATE_API_TOKEN'] = "r8_8rqk5poF7clkGv5ud4nJ4LbfDECdWF33nZGTl"
+os.environ['REPLICATE_API_TOKEN'] = my_secret
+#"r8_8rqk5poF7clkGv5ud4nJ4LbfDECdWF33nZGTl"
 
 # Updated generateChatResponse function to use Llama 2 API from Replicate
 def generateChatResponse(prompt):
