@@ -9,6 +9,7 @@ import replicate
 
 my_secret = os.environ['token']
 my_secret2 = os.environ['pidginprompt']
+mybestcontextprompt = "You are an empathetic AI"
 
 #openai.api_key = my_secret
 
@@ -263,7 +264,7 @@ conversation_history = [{"role": "system", "content": my_secret2}]
 
 def generateChatResponse(prompt):
     #global my_secret2
-    mybestcontextprompt = "You are an empathetic AI"
+    
     messages = conversation_history  # Use the entire conversation history as messages
 
     # Add the user's new question to messages
