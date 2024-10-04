@@ -228,12 +228,40 @@ def generateChatResponse(prompt):
 
 #****begining of chatgpt imported code
 
-
-
-
 # Set Replicate API token
 os.environ['REPLICATE_API_TOKEN'] = my_secret
 
+
+
+
+def parla(context, question):
+    ############################################################################
+    # Qua puoi eventualmente aggiungere alla domanda un contesto specifico
+    ############################################################################
+
+    prompt = "Answer the question based on the following context:" + context + "\n\nQuestion: " + question
+
+    input = {
+        "top_p": 1,
+        "prompt": prompt,
+        "temperature": 0.5,
+        "max_new_tokens": 500,
+        "min_new_tokens": -1
+    }
+
+    output = replicate.run(
+        "meta/llama-2-70b-chat",
+        input=input
+    )
+
+    return "".join(output)
+
+
+
+
+
+
+'''
 # Updated generateChatResponse function to use Llama 2 API from Replicate
 def generateChatResponse(qprompt):
     context= "You are a helpful AI assistant your name is Decker"
@@ -274,7 +302,7 @@ def generateChatResponse(qprompt):
     
     return answer
 
-
+'''
 
 #*****endof chatgpt imported code
 
