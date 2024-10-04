@@ -261,6 +261,36 @@ def parla(context, question):
 
 
 
+
+def generateChatResponse(prompt):
+    mybestcontextprompt = "You are a pidgin English AI"
+    messages = conversation_history  # Use the entire conversation history as messages
+
+    # Add the user's new question to messages
+    user_message = {"role": "user", "content": prompt}
+    messages.append(user_message)
+
+    # Hugging Face Login
+    
+    response = parla(mybestcontextprompt, prompt)
+    
+  #chatbot.chat(prompt)
+
+    try:
+        answer = response
+    except:
+        answer = "Oops! Try again later"
+
+    # Store the bot's response in the conversation history
+    bot_message = {"role": "assistant", "content": answer}
+    conversation_history.append(bot_message)
+
+    return answer
+
+
+
+
+
 '''
 # Updated generateChatResponse function to use Llama 2 API from Replicate
 def generateChatResponse(qprompt):
