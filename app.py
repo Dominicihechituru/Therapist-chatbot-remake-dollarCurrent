@@ -274,7 +274,7 @@ def generateChatResponse(prompt):
 
     # Hugging Face Login
     
-    response = "You are a funny and sarcastic pidgin English AI", prompt)
+    response = parla("You are a funny and sarcastic pidgin English AI", prompt)
     
   #chatbot.chat(prompt)
 
