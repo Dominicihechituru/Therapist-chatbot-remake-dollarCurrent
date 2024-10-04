@@ -258,12 +258,11 @@ def parla(context, question):
 
 
 
-
-
+conversation_history = [{"role": "system", "content": my_secret2}]
 
 
 def generateChatResponse(prompt):
-    mybestcontextprompt = "You are a pidgin English AI"
+    #mybestcontextprompt = "You are a pidgin English AI"
     messages = conversation_history  # Use the entire conversation history as messages
 
     # Add the user's new question to messages
