@@ -262,8 +262,8 @@ conversation_history = [{"role": "system", "content": my_secret2}]
 
 
 def generateChatResponse(prompt):
-    global my_secret2
-    #mybestcontextprompt = "You are a pidgin English AI"
+    #global my_secret2
+    mybestcontextprompt = "You are an empathetic AI"
     messages = conversation_history  # Use the entire conversation history as messages
 
     # Add the user's new question to messages
@@ -272,7 +272,7 @@ def generateChatResponse(prompt):
 
     # Hugging Face Login
     
-    response = parla(my_secret2, prompt)
+    response = parla(mybestcontextprompt, prompt)
     
   #chatbot.chat(prompt)
 
