@@ -235,6 +235,45 @@ os.environ['REPLICATE_API_TOKEN'] = my_secret
 
 
 
+# Initialize chat history
+chat_history = []
+
+def generateChatResponse(question):
+    global chat_history  # Ensure we're using the global chat history
+    context = "You are a pidgin English Chatbot"
+
+    # Add the latest question to the chat history
+    chat_history.append("User: " + question)
+
+    # Combine context with chat history
+    combined_context = context + "\n".join(chat_history)
+
+    # Create the prompt for the model
+    prompt = "Answer the question based on the following context:" + combined_context + "\n\nQuestion: " + question
+
+    input = {
+        "top_p": 1,
+        "prompt": prompt,
+        "temperature": 0.5,
+        "max_new_tokens": 500,
+        "min_new_tokens": -1
+    }
+
+    output = replicate.run(
+        "meta/llama-2-70b-chat",
+        input=input
+    )
+
+    # Add the response to the chat history
+    chat_history.append("Bot: " + "".join(output))
+
+    return "".join(output)
+
+
+
+
+'''
+
 def parla(context, question):
     ############################################################################
     # Qua puoi eventualmente aggiungere alla domanda un contesto specifico
@@ -289,7 +328,7 @@ def generateChatResponse(prompt):
 
     return answer
 
-
+'''
 
 
 
