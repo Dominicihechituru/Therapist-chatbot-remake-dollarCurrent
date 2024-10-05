@@ -240,16 +240,19 @@ chat_history = []
 
 def generateChatResponse(question):
     global chat_history  # Ensure we're using the global chat history
-    context = "You are a pidgin English Chatbot"
+    context = "You are a pidgin English bot"
+    chat_history.append("Context: " + context)
 
     # Add the latest question to the chat history
     chat_history.append("User: " + question)
 
+    prompt = chat_history
+
     # Combine context with chat history
-    combined_context = context + "\n".join(chat_history)
+    #combined_context = context + "\n".join(chat_history)
 
     # Create the prompt for the model
-    prompt = "Answer the question based on the following context:" + combined_context + "\n\nQuestion: " + question
+    #prompt = "Answer the question based on the following context:" + combined_context + "\n\nQuestion: " + question
 
     input = {
         "top_p": 1,
@@ -272,108 +275,7 @@ def generateChatResponse(question):
 
 
 
-'''
-
-def parla(context, question):
-    ############################################################################
-    # Qua puoi eventualmente aggiungere alla domanda un contesto specifico
-    ############################################################################
-
-    prompt = "Answer the question based on the following context:" + context + "\n\nQuestion: " + question
-
-    input = {
-        "top_p": 1,
-        "prompt": prompt,
-        "temperature": 0.5,
-        "max_new_tokens": 500,
-        "min_new_tokens": -1
-    }
-
-    output = replicate.run(
-        "meta/llama-2-70b-chat",
-        input=input
-    )
-
-    return "".join(output)
-
-
-
-conversation_history = [{"role": "system", "content": my_secret2}]
-
-
-def generateChatResponse(prompt):
-    global conversation_history
-    #global my_secret2
-    
-    messages = conversation_history  # Use the entire conversation history as messages
-
-    # Add the user's new question to messages
-    user_message = {"role": "user", "content": prompt}
-    messages.append(user_message)
-
-    # Hugging Face Login
-    
-    response = parla("You are a funny and sarcastic pidgin English AI", prompt)
-    
-  #chatbot.chat(prompt)
-
-    try:
-        answer = response
-    except:
-        answer = "Oops! Try again later"
-
-    # Store the bot's response in the conversation history
-    bot_message = {"role": "assistant", "content": answer}
-    conversation_history.append(bot_message)
-
-    return answer
-
-'''
-
-
-
-'''
-# Updated generateChatResponse function to use Llama 2 API from Replicate
-def generateChatResponse(qprompt):
-    context= "You are a helpful AI assistant your name is Decker"
-    prompt = "Answer the question based on the following context:"+context+"\n\nQuestion: "+qprompt
-    # Retrieve conversation history from session or initialize it if not found
-    if 'conversation_history' not in session:
-        session['conversation_history'] = [{"role": "system", "content": my_secret2}]
-    
-    conversation_history = session['conversation_history']
-    user_message = {"role": "user", "content": prompt}
-    conversation_history.append(user_message)
-    
-    # Prepare input for Llama 2 model
-    input = {
-        "top_p": 1,
-        "prompt": prompt,
-        "temperature": 0.5,
-        "max_new_tokens": 500,
-        "min_new_tokens": -1
-    }
-
-    # Generate response from Llama 2 API using Replicate
-    try:
-        output = replicate.run(
-            "meta/llama-2-70b-chat",
-            input=input
-        )
-        # Combine output into a single string
-        answer = "".join(output).replace('\n', '<br>')
-    except:
-        answer = "Oops! Try again later"
-    
-    bot_message = {"role": "assistant", "content": answer}
-    conversation_history.append(bot_message)
-    
-    # Save updated conversation history back to session
-    session['conversation_history'] = conversation_history
-    
-    return answer
-
-'''
+        
 
 #*****endof chatgpt imported code
 
