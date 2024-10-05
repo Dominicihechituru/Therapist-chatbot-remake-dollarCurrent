@@ -240,19 +240,19 @@ chat_history = []
 
 def generateChatResponse(question):
     global chat_history  # Ensure we're using the global chat history
-    context = "You are a pidgin English bot"
+    context = ""
     chat_history.append("Context: " + context)
 
     # Add the latest question to the chat history
     chat_history.append("User: " + question)
 
-    prompt = chat_history
+    #prompt = chat_history
 
     # Combine context with chat history
-    #combined_context = context + "\n".join(chat_history)
+    combined_context = context + "\n".join(chat_history)
 
     # Create the prompt for the model
-    #prompt = "Answer the question based on the following context:" + combined_context + "\n\nQuestion: " + question
+    prompt = "Answer the question based on the following context:" + combined_context + "\n\nQuestion: " + question
 
     input = {
         "top_p": 1,
