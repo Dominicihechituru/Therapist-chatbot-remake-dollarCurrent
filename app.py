@@ -235,6 +235,7 @@ os.environ['REPLICATE_API_TOKEN'] = my_secret
 
 
 
+
 # Initialize chat history
 chat_history = []
 
