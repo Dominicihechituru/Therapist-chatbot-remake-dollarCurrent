@@ -235,6 +235,29 @@ os.environ['REPLICATE_API_TOKEN'] = my_secret
 
 
 
+def api_wakeup():
+    
+    # prompt = "Answer the question based on the following context:" + context + "\n\nQuestion: " + question
+    prompt = 'reply me with only "fullstop"'
+
+    input = {
+        "top_p": 1,
+        "prompt": prompt,
+        "temperature": 0.5,
+        "max_new_tokens": 500,
+        "min_new_tokens": -1
+    }
+
+    output = replicate.run(
+        "meta/llama-2-70b-chat",
+        input=input
+    )
+
+    return print("".join(output))
+
+
+
+
 
 # Initialize chat history
 chat_history = []
@@ -289,6 +312,7 @@ def generateChatResponse(question):
 # Updated `/chatbot` route
 @app.route('/chatbot', methods=['POST', 'GET'])
 def rex():
+    api_wakeup()
     #usrr_uid = session['uid']
     #subscription_code_from_email = get_subscription_by_email(db.child("users").child(usrr_uid).child("email").get().val())
     email = session.get("email")
