@@ -279,17 +279,20 @@ def generateChatResponse(question):
     prompt = "Answer the question based on the following context:" + combined_context + "\n\nQuestion: " + question
 
     input = {
-        "top_p": 1,
-        "prompt": prompt,
-        "temperature": 0.5,
-        "max_new_tokens": 500,
-        "min_new_tokens": -1
-    }
+    "top_p": 0.9,
+    "prompt": "Work through this problem step by step:\n\nQ: Sarah has 7 llamas. Her friend gives her 3 more trucks of llamas. Each truck has 5 llamas. How many llamas does Sarah have in total?",
+    "min_tokens": 0,
+    "temperature": 0.6,
+    "prompt_template": "<|begin_of_text|><|start_header_id|>system<|end_header_id|>\n\nYou are a helpful assistant<|eot_id|><|start_header_id|>user<|end_header_id|>\n\n{prompt}<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n",
+    "presence_penalty": 1.15
+}
 
-    output = replicate.run(
-        "meta/llama-2-70b-chat",
-        input=input
-    )
+     output = replicate.run(
+    "meta/meta-llama-3-70b-instruct",
+    input=input
+)
+print("".join(output))
+#=> "Let's break this problem down step by step.\n\nStep 1: S...
 
     # Add the response to the chat history
     chat_history.append("Bot: " + "".join(output))
