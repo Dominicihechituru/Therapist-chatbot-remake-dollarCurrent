@@ -278,7 +278,7 @@ def generateChatResponse(question):
     # Create the prompt for the model
     prompt = "Answer the question based on the following context:" + combined_context + "\n\nQuestion: " + question
 
-    input = {
+    input_data = {
     "top_p": 0.9,
     "prompt": "Work through this problem step by step:\n\nQ: Sarah has 7 llamas. Her friend gives her 3 more trucks of llamas. Each truck has 5 llamas. How many llamas does Sarah have in total?",
     "min_tokens": 0,
@@ -287,12 +287,11 @@ def generateChatResponse(question):
     "presence_penalty": 1.15
 }
 
-     output = replicate.run(
+    output = replicate.run(
     "meta/meta-llama-3-70b-instruct",
-    input=input
+    input=input_data
 )
-print("".join(output))
-#=> "Let's break this problem down step by step.\n\nStep 1: S...
+
 
     # Add the response to the chat history
     chat_history.append("Bot: " + "".join(output))
