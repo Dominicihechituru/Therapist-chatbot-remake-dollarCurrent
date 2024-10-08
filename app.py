@@ -1,4 +1,4 @@
-from flask import Flask, render_template, jsonify, request, make_response, redirect, session, flash, abort, url_for
+ from flask import Flask, render_template, jsonify, request, make_response, redirect, session, flash, abort, url_for
 import openai
 import os
 from datetime import datetime
@@ -280,7 +280,7 @@ def generateChatResponse(question):
 
     input_data = {
     "top_p": 0.9,
-    "prompt": "Work through this problem step by step:\n\nQ: Sarah has 7 llamas. Her friend gives her 3 more trucks of llamas. Each truck has 5 llamas. How many llamas does Sarah have in total?",
+    "prompt":prompt,
     "min_tokens": 0,
     "temperature": 0.6,
     "prompt_template": "<|begin_of_text|><|start_header_id|>system<|end_header_id|>\n\nYou are a helpful assistant<|eot_id|><|start_header_id|>user<|end_header_id|>\n\n{prompt}<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n",
