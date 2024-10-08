@@ -245,7 +245,8 @@ def generateChatResponse(prompt):
     chat_history.append("User: " + prompt)
 
     # Combine context with chat history
-    context = "You are CBT therapist chatbot"  # You can add any context you'd like here
+    #context = "You are CBT therapist chatbot"  # You can add any context you'd like here
+    context = my_secret2
     combined_context = context + "\n".join(chat_history)
 
     # Create the prompt for the model
