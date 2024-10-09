@@ -1,4 +1,4 @@
-<!--<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -78,11 +78,15 @@
 <body>
     <!-- Add an image at the top, centered --
     <img src="your-image-url-here.jpg" alt="Top Image">
+-->
+<h2 style="color: navyblue;">Subscription for Decker AI<br> <h5 style="padding: 0px; margin: 0px; color:gray;">A product of Cazmir Tech</h5> </h2>
+    
+
 
     <div class="container">
         <input id="myInput" style="visibility: hidden" value="{{email}}">
 
-
+<!--
         <!-- First card --
         <div class="card">
             <h2>Daily Subscription</h2>
@@ -90,15 +94,16 @@
             <small>1 time payment</small>
             <button type="button" onclick="payWithPaystackDaily()">Pay</button>
         </div>
+-->
         
-        <!-- Second card --
+        <!-- Second card -->
         <div class="card">
             <h2>Weekly Subscription</h2>
             <h2>₦3,999</h2>
             <button type="button" onclick="payWithPaystackWeekly()">Pay</button>
         </div>
 
-        <!-- Thord card --
+        <!-- Thord card -->
         <div class="card">
             <h2>Monthly Subscription</h2>
             <h2>₦14,999</h2>
@@ -110,7 +115,7 @@
     <script type="text/javascript">
         // Step 1: Select the input element
 
-      function payWithPaystackDaily(){
+      /*function payWithPaystackDaily(){
         var inputElement = document.getElementById("myInput"); // Select the input element by ID
        var inputValue = inputElement.value; // Get the value of the input element
           
@@ -134,7 +139,7 @@
         });
         handler.openIframe();
       }
-
+*/
 
 
 
@@ -197,210 +202,6 @@
     </script>
 </body>
 </html>
--->
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Payment Page</title>
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: sans-serif;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-start;
-            align-items: center;
-            min-height: 100vh;
-            background-color: #f4f4f4;
-        }
 
-        .container {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            margin-top: 20px;
-            width: 100%;
-            max-width: 1200px; /* Added max-width to avoid stretching on large screens */
-            gap: 20px;
-            padding: 0 20px; /* Adds padding to the sides for smaller screens */
-        }
-
-        .card {
-            background-color: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            max-width: 300px;
-            width: 100%;
-            text-align: center;
-        }
-
-        .card h2 {
-            margin-bottom: 10px;
-            font-size: 24px;
-            color: #333;
-        }
-
-        .card small {
-            display: block;
-            margin-bottom: 10px;
-        }
-
-        button {
-            padding: 10px 20px;
-            background-color: #28a745;
-            border: none;
-            color: white;
-            font-size: 18px;
-            border-radius: 5px;
-            cursor: pointer;
-            width: 100%;
-        }
-
-        button:hover {
-            background-color: #218838;
-        }
-
-        img {
-            max-width: 100%;
-            height: auto;
-            margin-top: 10px;
-        }
-
-        /* Media Queries for responsiveness */
-        @media (max-width: 768px) {
-            .container {
-                flex-direction: column;
-            }
-
-            .card h2 {
-                font-size: 20px;
-            }
-
-            button {
-                font-size: 16px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .card h2 {
-                font-size: 18px;
-            }
-
-            button {
-                font-size: 14px;
-                padding: 8px 16px;
-            }
-        }
-    </style>
-</head>
-<body>
-    <!-- Add an image at the top, centered -->
-   <!-- <img src="your-image-url-here.jpg" alt="Top Image">-->
-    <h2 style="color: navyblue;">Subscription for Decker AI<br> <h5 style="padding: 0px; margin: 0px; color:gray;">A product of Cazmir Tech</h5> </h2>
-    
-
-    <div class="container">
-       <!-- <input id="myInput" style="visibility: hidden" value="{{email}}">
-
-        <!-- First card --
-        <div class="card">
-            <h2>Daily Subscription</h2>
-            <h2>₦699</h2>
-            <small>1 time payment</small>
-            <button type="button" onclick="payWithPaystackDaily()">Pay</button>
-        </div>-->
-
-        <!-- Second card -->
-        <div class="card">
-            <h2>Weekly Subscription</h2>
-            <h2>₦2,999</h2>
-            <button type="button" onclick="payWithPaystackWeekly()">Pay</button>
-        </div>
-
-        <!-- Third card -->
-        <div class="card">
-            <h2>Monthly Subscription</h2>
-            <h2>₦10,999</h2>
-            <button type="button" onclick="payWithPaystackMonthly()">Pay</button>
-        </div>
-    </div>
-
-    <script src="https://js.paystack.co/v1/inline.js"></script>
-    <script type="text/javascript">
-        /*function payWithPaystackDaily(){
-            var inputElement = document.getElementById("myInput");
-            var inputValue = inputElement.value;
-            
-            var handler = PaystackPop.setup({
-                key: 'pk_test_c4706f1b2ad704752356bc09a889ec5c4b9d93c5',
-                email: inputValue,
-                first_name: 'User',
-                amount: 69900, 
-                plan: "PLN_w4fs0biifu28ri0",
-                ref: ''+Math.floor((Math.random() * 1000000000) + 1),
-
-                callback: function(response){
-                    console.log(response);
-                    window.location.href = "/chatbot";
-                },
-                onClose: function(){
-                    alert('Transaction was not completed.');
-                }
-            });
-            handler.openIframe();
-        }*/
-
-        function payWithPaystackWeekly(){
-            var inputElement = document.getElementById("myInput");
-            var inputValue = inputElement.value;
-            
-            var handler = PaystackPop.setup({
-                key: 'pk_test_c4706f1b2ad704752356bc09a889ec5c4b9d93c5',
-                email: inputValue,
-                first_name: 'User',
-                amount: 399900,
-                plan: "PLN_lll42woni2tyrv9",
-                ref: ''+Math.floor((Math.random() * 1000000000) + 1),
-
-                callback: function(response){
-                    console.log(response);
-                    window.location.href = "/chatbot";
-                },
-                onClose: function(){
-                    alert('Transaction was not completed.');
-                }
-            });
-            handler.openIframe();
-        }
-
-        function payWithPaystackMonthly(){
-            var inputElement = document.getElementById("myInput");
-            var inputValue = inputElement.value;
-            
-            var handler = PaystackPop.setup({
-                key: 'pk_test_c4706f1b2ad704752356bc09a889ec5c4b9d93c5',
-                email: inputValue,
-                first_name: 'User',
-                amount: 1499900, 
-                plan: "PLN_f2w44y4tk384oxp",
-                ref: ''+Math.floor((Math.random() * 1000000000) + 1),
-
-                callback: function(response){
-                    console.log(response);
-                    window.location.href = "/chatbot";
-                },
-                onClose: function(){
-                    alert('Transaction was not completed.');
-                }
-            });
-            handler.openIframe();
-        }
-    </script>
-</body>
-</html>
+        
