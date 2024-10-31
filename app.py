@@ -194,6 +194,50 @@ def reset_daily_prompt_count(user_uid):
                 "last_prompt_date": today_date
             })
 
+
+
+# Updated generateChatResponse function to use session-based conversation_history
+def generateChatResponse(prompt):
+    # Retrieve conversation history from session or initialize it if not found
+    if 'chat_history' not in session:
+        session['chat_history'] = []
+
+    chat_history = session['chat_history']
+    
+    # Add the latest user input to the chat history
+    chat_history.append("User: " + prompt)
+
+    # Combine context with chat history
+    #context = ""  # You can add any context you'd like here
+    context = my_secret2
+    combined_context = context + "\n".join(chat_history)
+
+    # Create the prompt for the model
+    full_prompt = f"Answer the question based on the following context:\n{combined_context}\n\nQuestion: {prompt}"
+
+    input_data = {
+        "top_p": 0.9,
+        "prompt": full_prompt,
+        "min_tokens": 0,
+        "temperature": 0.6,
+        "prompt_template": "<|begin_of_text|><|start_header_id|>system<|end_header_id|>\n\nYou are a helpful assistant<|eot_id|><|start_header_id|>user<|end_header_id|>\n\n{prompt}<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n",
+        "presence_penalty": 1.15
+    }
+
+    # Call the Replicate model API to get the response
+    output = replicate.run("meta/meta-llama-3-70b-instruct", input=input_data)
+
+    # Add the bot's response to the chat history
+    bot_response = "".join(output)
+    chat_history.append("Bot: " + bot_response)
+
+    # Save updated conversation history back to session
+    session['chat_history'] = chat_history
+    
+    return bot_response
+
+
+
 @app.route('/chatbot', methods=['POST', 'GET'])
 def rex():
     if not session.get("is_logged_in", False):
