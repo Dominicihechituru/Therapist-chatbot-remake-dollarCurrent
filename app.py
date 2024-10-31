@@ -364,7 +364,7 @@ def rex():
 
         # Check if the user has exceeded the daily limit
         if prompt_count >= 3 and not check_subscription_status(subscription_code):
-            return jsonify({'answer': "NOTIFICATION!!!: Sorry, you've hit your free message limit, or your subscription has expired. <a href='https://decker-5ywk.onrender.com/payment'>Click here to continue with a weekly or monthly plan</a"}), 200
+            return jsonify({'answer': "NOTIFICATION!!!: Sorry, you've hit your free message limit, or your subscription has expired. <a href='https://new-pidgin-chatbot.onrender.com/payment'>Click here to continue with a weekly or monthly plan</a"}), 200
         if prompt_count >= 3 and check_subscription_status(subscription_code):
             response_text = generateChatResponse(prompt)
             return jsonify({'answer': response_text}), 200
