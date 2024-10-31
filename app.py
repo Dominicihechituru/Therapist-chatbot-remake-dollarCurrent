@@ -9,6 +9,9 @@ import replicate
 
 my_secret = os.environ['token']
 my_secret2 = os.environ['pidginprompt']
+#mybestcontextprompt = "You are an empathetic AI"
+
+#openai.api_key = my_secret
 
 app = Flask('app')
 app.secret_key = "your_secret_key"
@@ -97,13 +100,8 @@ def register():
             session["email"] = user["email"]
             session["uid"] = user["localId"]
             session["name"] = name
-            data = {
-                "name": name,
-                "email": email,
-                "prompt_count": 0,
-                "last_prompt_date": "",
-                "last_logged_in": datetime.now().strftime("%m/%d/%Y, %H:%M:%S")
-            }
+            session["prompt_count_db"] = 0
+            data = {"name": name, "email": email, "prompt_count_db": 0, "last_logged_in": datetime.now().strftime("%m/%d/%Y, %H:%M:%S")}
             db.child("users").child(session["uid"]).set(data)
             return render_template("verify_email.html")
         except Exception as e:
@@ -149,14 +147,14 @@ def aboutus():
 @app.route('/contactus')
 def contactus():
     return render_template('contactus.html')
-
-email_for_paystack = ""
+    
+email_for_paystack=""
 
 @app.route('/payment', methods=['POST', 'GET'])
 def payment():
     global email_for_paystack
     usr_uid = session['uid']
-    email_for_paystack = db.child("users").child(usr_uid).child("email").get().val()
+    email_for_paystack= db.child("users").child(usr_uid).child("email").get().val()
     return render_template('payment.html', email=email_for_paystack)
 
 def get_subscription_by_email(email):
@@ -178,22 +176,61 @@ def check_subscription_status(subscription_code):
     response = requests.get(url)
     if response.status_code == 200:
         data = response.json()
-        return data.get('message') == "Subscription is active"
+        if data.get('message') == "Subscription is active":
+            return True
+        else:
+            return False
     return False
 
-def reset_daily_prompt_count(user_uid):
-    """Reset the user's prompt count if it's a new day."""
-    user_data = db.child("users").child(user_uid).get().val()
-    if user_data:
-        last_date = user_data.get("last_prompt_date", "")
-        today_date = datetime.now().strftime("%Y-%m-%d")
+'''
+conversation_history = [{"role": "system", "content": my_secret2}]
 
-        if last_date != today_date:
-            db.child("users").child(user_uid).update({
-                "prompt_count": 0,
-                "last_prompt_date": today_date
-            })
+def generateChatResponse(prompt):
+    messages = conversation_history
+    user_message = {"role": "user", "content": prompt}
+    messages.append(user_message)
+    response = openai.ChatCompletion.create(model="gpt-3.5-turbo", messages=messages)
+    try:
+        answer = response['choices'][0]['message']['content'].replace('\n', '<br>')
+    except:
+        answer = "Oops! Try again later"
+    bot_message = {"role": "assistant", "content": answer}
+    conversation_history.append(bot_message)
+    return answer
+'''
+'''
+# Updated generateChatResponse function to use session-based conversation_history
+def generateChatResponse(prompt):
+    # Retrieve conversation history from session or initialize it if not found
+    if 'conversation_history' not in session:
+        session['conversation_history'] = [{"role": "system", "content": my_secret2}]
+    
+    conversation_history = session['conversation_history']
+    user_message = {"role": "user", "content": prompt}
+    conversation_history.append(user_message)
+    
+    # Generate response from OpenAI API
+    response = openai.ChatCompletion.create(model="gpt-3.5-turbo", messages=conversation_history)
+    try:
+        answer = response['choices'][0]['message']['content'].replace('\n', '<br>')
+    except:
+        answer = "Oops! Try again later"
+    
+    bot_message = {"role": "assistant", "content": answer}
+    conversation_history.append(bot_message)
+    
+    # Save updated conversation history back to session
+    session['conversation_history'] = conversation_history
+    
+    return answer
+'''
 
+
+
+#****begining of chatgpt imported code
+
+# Set Replicate API token
+os.environ['REPLICATE_API_TOKEN'] = my_secret
 
 
 # Updated generateChatResponse function to use session-based conversation_history
@@ -238,32 +275,107 @@ def generateChatResponse(prompt):
 
 
 
+
+
+
+
+'''
+
+# Initialize chat history
+chat_history = []
+
+def generateChatResponse(question):
+    global chat_history  # Ensure we're using the global chat history
+    context = ""
+    chat_history.append("Context: " + context)
+
+    # Add the latest question to the chat history
+    chat_history.append("User: " + question)
+
+    #prompt = chat_history
+
+    # Combine context with chat history
+    combined_context = context + "\n".join(chat_history)
+
+    # Create the prompt for the model
+    prompt = "Answer the question based on the following context:" + combined_context + "\n\nQuestion: " + question
+
+    input_data = {
+    "top_p": 0.9,
+    "prompt":prompt,
+    "min_tokens": 0,
+    "temperature": 0.6,
+    "prompt_template": "<|begin_of_text|><|start_header_id|>system<|end_header_id|>\n\nYou are a helpful assistant<|eot_id|><|start_header_id|>user<|end_header_id|>\n\n{prompt}<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n",
+    "presence_penalty": 1.15
+}
+
+    output = replicate.run(
+    "meta/meta-llama-3-70b-instruct",
+    input=input_data
+)
+
+
+    # Add the response to the chat history
+    chat_history.append("Bot: " + "".join(output))
+
+    return "".join(output)
+
+'''
+
+
+        
+
+#*****endof chatgpt imported code
+
+
+
+
+
+
+
+# Updated `/chatbot` route
 @app.route('/chatbot', methods=['POST', 'GET'])
 def rex():
+    
+    #usrr_uid = session['uid']
+    #subscription_code_from_email = get_subscription_by_email(db.child("users").child(usrr_uid).child("email").get().val())
+    email = session.get("email")
+    subscription_code_from_email = get_subscription_by_email(email)
+
+    subscription_code = subscription_code_from_email
+
     if not session.get("is_logged_in", False):
         return redirect(url_for('login'))
 
-    user_uid = session['uid']
-    reset_daily_prompt_count(user_uid)  # Reset prompt count if necessary
-
-    # Retrieve the user's current prompt count and check the date
-    user_data = db.child("users").child(user_uid).get().val()
-    prompt_count = user_data.get("prompt_count", 0)
-    subscription_code = get_subscription_by_email(session.get("email"))
-
     if request.method == 'POST':
         prompt = request.form['prompt']
+        user_uid = session['uid']  # Get the user's unique ID from the session
 
+        # Retrieve the user's prompt count from Firebase
+        try:
+            prompt_count = db.child("users").child(user_uid).child("prompt_count_db").get().val()
+            if prompt_count is None:
+                prompt_count = 0  # Set to 0 if no record exists yet
+        except Exception as e:
+            print(f"Error fetching prompt count from Firebase: {e}")
+            prompt_count = 0  # Default to 0 in case of an error
+
+        res = {}
+        # Check if the user has exceeded the daily limit
         if prompt_count >= 3 and not check_subscription_status(subscription_code):
             return jsonify({'answer': "NOTIFICATION!!!: Sorry, You've hit your free message limit, or your subscription has expired. <a href='https://decker-5ywk.onrender.com/payment'>Click here to continue with a weekly or monthly plan</a"}), 200
-        
-        res = {}
+        if prompt_count >= 3 and check_subscription_status(subscription_code):
+            res['answer'] = generateChatResponse(prompt)
+            response = make_response(jsonify(res), 200)
+            return response
+
+        # Generate the chat response
         res['answer'] = generateChatResponse(prompt)
 
         # Increment the user's prompt count and update it in Firebase
         try:
             new_prompt_count = prompt_count + 1
-            db.child("users").child(user_uid).update({"prompt_count": new_prompt_count})
+            db.child("users").child(user_uid).update({"prompt_count_db": new_prompt_count})
         except Exception as e:
             print(f"Error updating prompt count in Firebase: {e}")
 
@@ -271,5 +383,8 @@ def rex():
         return response
 
     return render_template('rexhtml.html')
+    
+
+
 
 app.run(debug=False, host='0.0.0.0', port=8000)
