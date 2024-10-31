@@ -1,9 +1,7 @@
 from flask import Flask, render_template, jsonify, request, make_response, redirect, session, flash, abort, url_for
-import openai
-import os
 from datetime import datetime
 import pyrebase
-import re
+import os
 import requests
 import replicate
 
@@ -336,12 +334,8 @@ def generateChatResponse(question):
 # Updated `/chatbot` route
 @app.route('/chatbot', methods=['POST', 'GET'])
 def rex():
-    
-    #usrr_uid = session['uid']
-    #subscription_code_from_email = get_subscription_by_email(db.child("users").child(usrr_uid).child("email").get().val())
     email = session.get("email")
     subscription_code_from_email = get_subscription_by_email(email)
-
     subscription_code = subscription_code_from_email
 
     if not session.get("is_logged_in", False):
@@ -349,42 +343,38 @@ def rex():
 
     if request.method == 'POST':
         prompt = request.form['prompt']
-        user_uid = session['uid']  # Get the user's unique ID from the session
+        user_uid = session['uid']
 
-        # Retrieve the user's prompt count from Firebase
+        # Retrieve the user's prompt count and last prompt date from Firebase
         try:
-            prompt_count = db.child("users").child(user_uid).child("prompt_count_db").get().val()
-            if prompt_count is None:
-                prompt_count = 0  # Set to 0 if no record exists yet
+            user_data = db.child("users").child(user_uid).get().val()
+            prompt_count = user_data.get("prompt_count_db", 0)
+            last_prompt_date = user_data.get("last_prompt_date")
         except Exception as e:
-            print(f"Error fetching prompt count from Firebase: {e}")
-            prompt_count = 0  # Default to 0 in case of an error
+            print(f"Error fetching user data from Firebase: {e}")
+            prompt_count = 0
+            last_prompt_date = None
 
-        res = {}
+        # Check if it's a new day to reset the prompt count
+        today = datetime.now().strftime("%Y-%m-%d")
+        if last_prompt_date != today:
+            prompt_count = 0
+            db.child("users").child(user_uid).update({"prompt_count_db": prompt_count, "last_prompt_date": today})
+
         # Check if the user has exceeded the daily limit
         if prompt_count >= 3 and not check_subscription_status(subscription_code):
-            return jsonify({'answer': "NOTIFICATION!!!: Sorry, You've hit your free message limit, or your subscription has expired. <a href='https://decker-5ywk.onrender.com/payment'>Click here to continue with a weekly or monthly plan</a"}), 200
+            return jsonify({'answer': "NOTIFICATION!!!: Sorry, you've hit your free message limit, or your subscription has expired. <a href='https://decker-5ywk.onrender.com/payment'>Click here to continue with a weekly or monthly plan</a"}), 200
         if prompt_count >= 3 and check_subscription_status(subscription_code):
-            res['answer'] = generateChatResponse(prompt)
-            response = make_response(jsonify(res), 200)
-            return response
+            response_text = generateChatResponse(prompt)
+            return jsonify({'answer': response_text}), 200
 
-        # Generate the chat response
-        res['answer'] = generateChatResponse(prompt)
+        # Generate the chat response and increment the prompt count
+        response_text = generateChatResponse(prompt)
+        new_prompt_count = prompt_count + 1
+        db.child("users").child(user_uid).update({"prompt_count_db": new_prompt_count, "last_prompt_date": today})
 
-        # Increment the user's prompt count and update it in Firebase
-        try:
-            new_prompt_count = prompt_count + 1
-            db.child("users").child(user_uid).update({"prompt_count_db": new_prompt_count})
-        except Exception as e:
-            print(f"Error updating prompt count in Firebase: {e}")
-
-        response = make_response(jsonify(res), 200)
-        return response
+        return jsonify({'answer': response_text}), 200
 
     return render_template('rexhtml.html')
-    
-
-
 
 app.run(debug=False, host='0.0.0.0', port=8000)
