@@ -171,7 +171,7 @@ def get_subscription_by_email(email):
     return None
 
 def check_subscription_status(subscription_code):
-    url = f"https://check-paystack-api.onrender.com/check_subscription/{subscription_code}"
+    url = f"https://check-paystack-api-ct.onrender.com/check_subscription/{subscription_code}"
     response = requests.get(url)
     if response.status_code == 200:
         data = response.json()
