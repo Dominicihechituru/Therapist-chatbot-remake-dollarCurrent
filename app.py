@@ -32,6 +32,58 @@ firebase = pyrebase.initialize_app(config)
 auth = firebase.auth()
 db = firebase.database()
 
+
+
+
+@app.route("/welcome")
+def welcome():
+    
+    return render_template("front_welcome.html")
+
+
+@app.route("/googlesignin", methods=['POST', 'GET'])
+def googlesignin():
+    if request.method == "POST":
+        try:
+            user_data = request.json
+            if not user_data:
+                print("No user data provided")
+                return jsonify({"message": "No user data provided"}), 400
+
+            # Process user data, assuming it contains 'email' and 'name'
+            email = user_data.get("email")
+            name = user_data.get("displayName")
+            uid = user_data.get("uid")
+            
+            if not email or not name:
+                print("Incomplete user data")
+                return jsonify({"message": "Incomplete user data"}), 400
+
+            # Set session variables
+            session["is_logged_in"] = True
+            session["email"] = email
+            session["name"] = name
+            session["uid"] = uid
+
+            # Debugging prints to confirm session data is set
+            print(f"User {email} signed in successfully")
+            print(f"Session data: {session}")
+            if not db.child("users").child(session["uid"]).get().val():
+                data = {"name": name, "email": email, "prompt_count_db": 0, "last_logged_in": datetime.now().strftime("%m/%d/%Y, %H:%M:%S")}
+                db.child("users").child(session["uid"]).set(data)
+
+            # Redirect to welcome page
+            #return redirect(url_for("welcome"))
+
+        except Exception as e:
+            print(f"Error during Google sign-in: {e}")
+            return jsonify({"message": "An error occurred during sign-in"}), 500
+
+    # For GET requests, just return a success message
+    #return jsonify({"message": "Google Sign-In route"}), 200
+    return redirect(url_for("home"))
+
+
 @app.route("/login")
 def login():
     return render_template("login.html")
