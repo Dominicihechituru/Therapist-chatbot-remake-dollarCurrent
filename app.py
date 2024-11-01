@@ -40,8 +40,8 @@ def login():
 def signup():
     return render_template("signup.html")
 
-@app.route("/welcome")
-def welcome():
+@app.route("/home")
+def home():
     if session.get("is_logged_in", False):
         return render_template("index.html", email=session["email"], name=session["name"])
     else:
@@ -77,7 +77,7 @@ def result():
             return redirect(url_for('login'))
     else:
         if session.get("is_logged_in", False):
-            return redirect(url_for('welcome'))
+            return redirect(url_for('home'))
         else:
             return redirect(url_for('login'))
 
@@ -108,7 +108,7 @@ def register():
             return redirect(url_for('signup'))
     else:
         if session.get("is_logged_in", False):
-            return redirect(url_for('welcome'))
+            return redirect(url_for('home'))
         else:
             return redirect(url_for('signup'))
 
