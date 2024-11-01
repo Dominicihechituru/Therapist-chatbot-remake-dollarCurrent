@@ -71,7 +71,7 @@ def result():
                 db.child("users").child(session["uid"]).update({"last_logged_in": datetime.now().strftime("%m/%d/%Y, %H:%M:%S")})
             else:
                 session["name"] = "User"
-            return redirect(url_for('welcome'))
+            return redirect(url_for('home'))
         except Exception as e:
             print("Error occurred: ", e)
             return redirect(url_for('login'))
