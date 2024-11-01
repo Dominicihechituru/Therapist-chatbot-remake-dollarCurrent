@@ -419,6 +419,8 @@ def rex():
             return jsonify({'answer': "NOTIFICATION!!!: Sorry, you've hit your free message limit, or your subscription has expired. <a href='https://new-pidgin-chatbot.onrender.com/payment'>Click here to continue with a weekly or monthly plan</a"}), 200
         if prompt_count >= 3 and check_subscription_status(subscription_code):
             response_text = generateChatResponse(prompt)
+            new_prompt_count = prompt_count + 1
+            db.child("users").child(user_uid).update({"prompt_count_db": new_prompt_count, "last_prompt_date": today})
             return jsonify({'answer': response_text}), 200
 
         # Generate the chat response and increment the prompt count
