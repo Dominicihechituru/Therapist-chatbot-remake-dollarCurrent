@@ -1,0 +1,383 @@
+<!--<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Refine Photos</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
+            padding: 0 40px;
+        }
+
+        .form-container {
+            margin-top: 80px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            width: 100%;
+            max-width: 350px;
+        }
+
+        h1 {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 5px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            text-align: center;
+            text-decoration: none;
+            color: black;
+            transition: background-color 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        .btn-email {
+            background-color: white;
+            border: 2px solid black;
+        }
+
+        .btn-email:hover {
+            background-color: white;
+            border: 2px solid black;
+        }
+
+        .btn-google {
+            background-color: white;
+            border: 2px solid black;
+        }
+
+        .btn-google:hover {
+            background-color: white;
+            border: 2px solid black;
+        }
+
+        .btn-google img, .btn-email img {
+            width: 30px;
+            height: 30px;
+            margin-right: 15px;
+        }
+    </style>
+    
+    <!-- Added JS code --
+    
+    <script type="module">
+      // Import the functions you need from the SDKs
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+      import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+    
+      // Your web app's Firebase configuration
+      const firebaseConfig = {
+        apiKey: "AIzaSyCyzNpYl2iskK_VW7p3I5BV3kBmzrRudF4",
+        authDomain: "cazmir-tech.firebaseapp.com",
+        databaseURL: "https://cazmir-tech-default-rtdb.firebaseio.com",
+        projectId: "cazmir-tech",
+        storageBucket: "cazmir-tech.appspot.com",
+        messagingSenderId: "404882482231",
+        appId: "1:404882482231:web:d614535e20f7f55ef1cbb2",
+        measurementId: "G-3F5T0SPESV"
+      };
+    
+      // Initialize Firebase
+      const app = initializeApp(firebaseConfig);
+      const auth = getAuth(app);
+      const provider = new GoogleAuthProvider();
+    
+      // Function to handle sign-in
+      function signInWithGoogle() {
+        signInWithPopup(auth, provider)
+          .then((result) => {
+            // Successfully signed in
+            const user = result.user;
+            console.log("User signed in:", user);
+    
+            // Send user data to the Flask backend
+            fetch('/googlesignin', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                  uid: user.uid,
+                  displayName: user.displayName,
+                  email: user.email,
+                  emailVerified: user.emailVerified,
+                  photoURL: user.photoURL,
+                  phoneNumber: user.phoneNumber,
+                  providerId: user.providerId,
+                  isAnonymous: user.isAnonymous,
+                  metadata: user.metadata,
+                  providerData: user.providerData
+                })
+              })
+              .then(response => {
+                if (response.ok) {
+                  // Redirect to /home after successfully sending data
+                  window.location.href = "/googlesignin";
+                } else {
+                  throw new Error("Failed to send user data to the backend");
+                }
+              })
+              .catch((error) => {
+                // Handle errors
+                console.error("Error sending user data to the backend:", error);
+                alert("Failed to send user data: " + error.message);
+              });
+          })
+          .catch((error) => {
+            // Handle errors
+            console.error("Error during sign-in:", error.code, error.message);
+            alert("Sign-in failed: " + error.message);
+          });
+      }
+    
+      // Attach the function to the global window object
+      window.signInWithGoogle = signInWithGoogle;
+    </script>
+</head>
+<body>
+    <div class="form-container">
+        <h1>Welcome to refinePhotos</h1>
+        <img style="border-radius: 30%; margin-top: 20px; margin-bottom: 15px; width: 100px; height: 100px" src="static/indeximgs/beforehandafter.jpg" alt="Before and after">
+        <button class="btn btn-google" onclick="signInWithGoogle()">
+            <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google logo">
+            Sign in with Google
+        </button>
+        <a href="{{ url_for('login') }}" class="btn btn-email">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/4/4e/Mail_%28iOS%29.svg" alt="Mail icon">
+            Sign in with email
+        </a>
+    </div>
+</body>
+</html>-->
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Refine Photos</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
+            padding: 0 40px;
+        }
+
+        .form-container {
+            margin-top: 80px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            width: 100%;
+            max-width: 350px;
+        }
+
+        h1 {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 15px 25px;
+            border: none;
+            border-radius: 5px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            text-align: center;
+            text-decoration: none;
+            color: black;
+            transition: background-color 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        .btn-email {
+            background-color: white;
+            border: 2px solid black;
+        }
+
+        .btn-email:hover {
+            background-color: white;
+            border: 2px solid black;
+        }
+
+        .btn-google {
+            background-color: white;
+            border: 2px solid black;
+        }
+
+        .btn-google:hover {
+            background-color: white;
+            border: 2px solid black;
+        }
+
+        .btn-google img, .btn-email img {
+            width: 30px;
+            height: 30px;
+            margin-right: 15px;
+        }
+
+        /* Styles for the popup */
+        .popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: white; /* White background */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            visibility: hidden; /* Initially hidden */
+        }
+
+        .popup .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .popup .text {
+            margin-top: 20px;
+            font-size: 18px;
+            color: black; /* Black text */
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .popup.visible {
+            visibility: visible; /* Show when visible class is added */
+        }
+    </style>
+    
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+      import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+
+      const firebaseConfig = {
+        apiKey: "AIzaSyCyzNpYl2iskK_VW7p3I5BV3kBmzrRudF4",
+        authDomain: "cazmir-tech.firebaseapp.com",
+        databaseURL: "https://cazmir-tech-default-rtdb.firebaseio.com",
+        projectId: "cazmir-tech",
+        storageBucket: "cazmir-tech.appspot.com",
+        messagingSenderId: "404882482231",
+        appId: "1:404882482231:web:d614535e20f7f55ef1cbb2",
+        measurementId: "G-3F5T0SPESV"
+      };
+
+      const app = initializeApp(firebaseConfig);
+      const auth = getAuth(app);
+      const provider = new GoogleAuthProvider();
+
+      function signInWithGoogle() {
+        // Show the popup
+        const popup = document.getElementById('loadingPopup');
+        popup.classList.add('visible');
+
+        signInWithPopup(auth, provider)
+          .then((result) => {
+            const user = result.user;
+            console.log("User signed in:", user);
+
+            fetch('/googlesignin', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                  uid: user.uid,
+                  displayName: user.displayName,
+                  email: user.email,
+                  emailVerified: user.emailVerified,
+                  photoURL: user.photoURL,
+                  phoneNumber: user.phoneNumber,
+                  providerId: user.providerId,
+                  isAnonymous: user.isAnonymous,
+                  metadata: user.metadata,
+                  providerData: user.providerData
+                })
+              })
+              .then(response => {
+                if (response.ok) {
+                  window.location.href = "/googlesignin";
+                } else {
+                  throw new Error("Failed to send user data to the backend");
+                }
+              })
+              .catch((error) => {
+                console.error("Error sending user data to the backend:", error);
+                alert("Failed to send user data: " + error.message);
+                popup.classList.remove('visible'); // Hide the popup
+              });
+          })
+          .catch((error) => {
+            console.error("Error during sign-in:", error.code, error.message);
+            alert("Sign-in failed: " + error.message);
+            popup.classList.remove('visible'); // Hide the popup
+          });
+      }
+
+      window.signInWithGoogle = signInWithGoogle;
+    </script>
+</head>
+<body>
+    <div class="form-container">
+        <h1>Welcome to refinePhotos</h1>
+        <img style="border-radius: 30%; margin-top: 20px; margin-bottom: 15px; width: 100px; height: 100px" src="static/indeximgs/beforehandafter.jpg" alt="Before and after">
+        <button class="btn btn-google" onclick="signInWithGoogle()">
+            <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google logo">
+            Continue with Google
+        </button>
+        <a href="{{ url_for('login') }}" class="btn btn-email">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/4/4e/Mail_%28iOS%29.svg" alt="Mail icon">
+            Continue with email
+        </a>
+    </div>
+
+    <!-- Popup for loading -->
+    <div id="loadingPopup" class="popup">
+        <div class="spinner"></div>
+        <div class="text">Please wait...</div>
+    </div>
+</body>
+</html>
