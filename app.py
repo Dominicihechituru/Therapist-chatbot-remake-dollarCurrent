@@ -97,7 +97,7 @@ def home():
     if session.get("is_logged_in", False):
         return render_template("index.html", email=session["email"], name=session["name"])
     else:
-        return redirect(url_for('login'))
+        return redirect(url_for('welcome'))
 
 def check_password_strength(password):
     return re.match(r'^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,}$', password) is not None
@@ -181,7 +181,7 @@ def reset_password():
 def logout():
     db.child("users").child(session["uid"]).update({"last_logged_out": datetime.now().strftime("%m/%d/%Y, %H:%M:%S")})
     session["is_logged_in"] = False
-    return redirect(url_for('login'))
+    return redirect(url_for('welcome'))
 
 @app.route('/landing')
 def hello_world():
@@ -392,7 +392,7 @@ def rex():
     subscription_code = subscription_code_from_email
 
     if not session.get("is_logged_in", False):
-        return redirect(url_for('login'))
+        return redirect(url_for('welcome'))
 
     if request.method == 'POST':
         prompt = request.form['prompt']
