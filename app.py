@@ -32,7 +32,7 @@ firebase = pyrebase.initialize_app(config)
 auth = firebase.auth()
 db = firebase.database()
 
-@app.route("/")
+@app.route("/login")
 def login():
     return render_template("login.html")
 
@@ -40,7 +40,7 @@ def login():
 def signup():
     return render_template("signup.html")
 
-@app.route("/home")
+@app.route("/")
 def home():
     if session.get("is_logged_in", False):
         return render_template("index.html", email=session["email"], name=session["name"])
