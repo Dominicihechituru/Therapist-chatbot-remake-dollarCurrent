@@ -359,11 +359,90 @@
 
       window.signInWithGoogle = signInWithGoogle;
     </script>
+
+
+
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+      import { getAuth, signInWithPopup, FacebookAuthProvider } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+
+      const firebaseConfig = {
+        'apiKey': "AIzaSyDa-iB8wmpcfIl6ZZ4tshr9-C0VaLjJDd4",
+        'authDomain': "funny-eng-chatbot.firebaseapp.com",
+        'databaseURL': "https://funny-eng-chatbot-default-rtdb.firebaseio.com",
+        'projectId': "funny-eng-chatbot",
+        'storageBucket': "funny-eng-chatbot.appspot.com",
+        'messagingSenderId': "649383467646",
+        'appId': "1:649383467646:web:9155941c081d23ec44162f",
+        'measurementId': "G-6WX7ERK5R8"
+      };
+
+      const app = initializeApp(firebaseConfig);
+      const auth = getAuth(app);
+      const provider = new FacebookAuthProvider();
+
+      function signInWithFacebook() {
+        // Show the popup
+        const popup = document.getElementById('loadingPopup');
+        popup.classList.add('visible');
+
+        signInWithPopup(auth, provider)
+          .then((result) => {
+            const user = result.user;
+            console.log("User signed in:", user);
+
+            fetch('/facebooksignin', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                  uid: user.uid,
+                  displayName: user.displayName,
+                  email: user.email,
+                  emailVerified: user.emailVerified,
+                  photoURL: user.photoURL,
+                  phoneNumber: user.phoneNumber,
+                  providerId: user.providerId,
+                  isAnonymous: user.isAnonymous,
+                  metadata: user.metadata,
+                  providerData: user.providerData
+                })
+              })
+              .then(response => {
+                if (response.ok) {
+                  window.location.href = "/facebooksignin";
+                } else {
+                  throw new Error("Failed to send user data to the backend");
+                }
+              })
+              .catch((error) => {
+                console.error("Error sending user data to the backend:", error);
+                alert("Failed to send user data: " + error.message);
+                popup.classList.remove('visible'); // Hide the popup
+              });
+          })
+          .catch((error) => {
+            console.error("Error during sign-in:", error.code, error.message);
+            alert("Sign-in failed: " + error.message);
+            popup.classList.remove('visible'); // Hide the popup
+          });
+      }
+
+      window.signInWithFacebook = signInWithFacebook;
+</script>
 </head>
 <body>
     <div class="form-container">
         <h1>Welcome to AkposAI</h1>
         <img style="border-radius: 30%; margin-top: 20px; margin-bottom: 15px; width: 100px; height: 100px" src="static/akposaiphoto.png" alt="Akpos AI photo">
+
+
+        <button class="btn btn-google" onclick="signInWithFacebook()">
+            <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google logo">
+            Continue with Facebook
+        </button>
+        
         <button class="btn btn-google" onclick="signInWithGoogle()">
             <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google logo">
             Continue with Google
