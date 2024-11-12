@@ -361,8 +361,8 @@
     </script>
 
 
-
-    <script type="module">
+<!-- For Firebase Facebook authentication -->
+   <!-- <script type="module">
       import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
       import { getAuth, signInWithPopup, FacebookAuthProvider } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
 
@@ -431,17 +431,18 @@
 
       window.signInWithFacebook = signInWithFacebook;
 </script>
+    -->
 </head>
 <body>
     <div class="form-container">
         <h1>Welcome to AkposAI</h1>
         <img style="border-radius: 30%; margin-top: 20px; margin-bottom: 15px; width: 100px; height: 100px" src="static/akposaiphoto.png" alt="Akpos AI photo">
 
-
-        <button class="btn btn-google" onclick="signInWithFacebook()">
+<!-- For Firebase Facebook Authentication -->
+       <!-- <button class="btn btn-google" onclick="signInWithFacebook()">
             <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google logo">
             Continue with Facebook
-        </button>
+        </button>-->
         
         <button class="btn btn-google" onclick="signInWithGoogle()">
             <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google logo">
