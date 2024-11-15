@@ -407,7 +407,7 @@ def presignuprex():
         return response
 
     # Render template for GET requests
-    return render_template('rexhtml.html')
+    return render_template('presignuprexhtml.html')
 
 
 
