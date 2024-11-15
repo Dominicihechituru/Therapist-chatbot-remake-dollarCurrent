@@ -379,6 +379,41 @@ def generateChatResponse(question):
 #*****endof chatgpt imported code
 
 
+@app.route('/presiginchatbot', methods=['POST', 'GET'])
+def presigninrex():
+    if not session.get("is_logged_in", False):
+        return redirect(url_for('login'))
+
+    if request.method == 'POST':
+        prompt = request.form['prompt']
+        
+        # Get the prompt count from cookies
+        prompt_count = request.cookies.get('prompt_count')
+        if prompt_count is None:
+            prompt_count = 0
+        else:
+            prompt_count = int(prompt_count)
+
+        res = {}
+        # Check if the user has exceeded the limit
+        if prompt_count >= 3:
+            return jsonify({'answer': "NOTIFICATION!!!: You have reached the limit of 10 prompts. Please consider upgrading your access for more features."}), 200
+        
+        # Generate the chat response
+        res['answer'] = generateChatResponse(prompt)
+
+        # Increment the prompt count and set it in the cookie
+        new_prompt_count = prompt_count + 1
+        response = make_response(jsonify(res), 200)
+        response.set_cookie('prompt_count', str(new_prompt_count), max_age=24*60*60)  # Cookie expires in 1 day
+
+        # Show notification if prompt count reaches 10
+        if new_prompt_count == 10:
+            res['notification'] = "You have reached the limit of 10 prompts. Please consider upgrading your access for more features."
+
+        return response
+
+    return render_template('rexhtml.html')
 
 
 
