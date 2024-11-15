@@ -378,38 +378,7 @@ def generateChatResponse(question):
 
 #*****endof chatgpt imported code
 
-'''
-@app.route('/presignupchatbot', methods=['POST', 'GET'])
-def presignuprex():
-    # Check if user is logged in
-    #if not session.get("is_logged_in", False):
-        #return redirect(url_for('login'))
 
-    # Initialize prompt count from cookie
-    prompt_count = int(request.cookies.get('prompt_count', 0))
-
-    if request.method == 'POST':
-        # Get user's prompt
-        prompt = request.form['prompt']
-
-        # Check prompt count
-        if prompt_count >= 3:
-            res = {'answer': "3 prompts completed"}
-        else:
-            # Generate chat response
-            res = {'answer': generateChatResponse(prompt)}
-
-        # Increment prompt count and set cookie
-        prompt_count += 1
-        response = make_response(jsonify(res), 200)
-        response.set_cookie('prompt_count', str(prompt_count))
-
-        return response
-
-    # Render template for GET requests
-    return render_template('presignuprexhtml.html')
-
-'''
 
 @app.route('/presignupchatbot', methods=['POST', 'GET'])
 def presignuprex():
