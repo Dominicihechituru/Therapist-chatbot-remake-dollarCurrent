@@ -1,5 +1,5 @@
 from flask import Flask, render_template, jsonify, request, make_response, redirect, session, flash, abort, url_for
-from datetime import datetime
+from datetime import datetime, timedelta
 import pyrebase
 import os
 import re
@@ -378,7 +378,7 @@ def generateChatResponse(question):
 
 #*****endof chatgpt imported code
 
-
+'''
 @app.route('/presignupchatbot', methods=['POST', 'GET'])
 def presignuprex():
     # Check if user is logged in
@@ -409,6 +409,52 @@ def presignuprex():
     # Render template for GET requests
     return render_template('presignuprexhtml.html')
 
+'''
+
+@app.route('/presignupchatbot', methods=['POST', 'GET'])
+def presignuprex():
+    # Check if user is logged in
+    #if not session.get("is_logged_in", False):
+        #return redirect(url_for('login'))
+
+    # Initialize prompt count from cookie
+    prompt_count = int(request.cookies.get('prompt_count', 0))
+
+    if request.method == 'POST':
+        # Get user's prompt
+        prompt = request.form['prompt']
+
+        # Check prompt count
+        if prompt_count >= 3:
+            res = {'answer': "3 prompts completed"}
+        else:
+            try:
+                # Generate chat response
+                response = generateChatResponse(prompt)
+                if response is None:
+                    res = {'answer': "Error generating response"}
+                else:
+                    res = {'answer': response}
+            except Exception as e:
+                res = {'answer': f"Error: {str(e)}"}
+
+        # Increment prompt count and set cookie
+        prompt_count += 1
+        response = make_response(jsonify(res), 200)
+        
+        # Set cookie expiration to 1 year
+        expires = datetime.utcnow() + timedelta(days=365)
+        response.set_cookie('prompt_count', str(prompt_count), 
+                            expires=expires, 
+                            path='/',
+                            secure=True, 
+                            samesite='Strict',
+                            httponly=True)
+
+        return response
+
+    # Render template for GET requests
+    return render_template('presignuprexhtml.html')
 
 
 
