@@ -379,48 +379,34 @@ def generateChatResponse(question):
 #*****endof chatgpt imported code
 
 
-@app.route('/presiginchatbot', methods=['POST', 'GET'])
-def presigninrex():
+@app.route('/presignupchatbot', methods=['POST', 'GET'])
+def presignuprex():
+    # Check if user is logged in
     #if not session.get("is_logged_in", False):
         #return redirect(url_for('login'))
 
+    # Initialize prompt count from cookie
+    prompt_count = int(request.cookies.get('prompt_count', 0))
+
     if request.method == 'POST':
-    if request.method == 'POST':
+        # Get user's prompt
         prompt = request.form['prompt']
-        user_uid = session['uid']
 
-        # Retrieve the user's prompt count and last prompt date from Firebase
-        try:
-            user_data = db.child("users").child(user_uid).get().val()
-            prompt_count = user_data.get("prompt_count_db", 0)
-            last_prompt_date = user_data.get("last_prompt_date")
-        except Exception as e:
-            print(f"Error fetching user data from Firebase: {e}")
-            prompt_count = 0
-            last_prompt_date = None
+        # Check prompt count
+        if prompt_count >= 3:
+            res = {'answer': "3 prompts completed"}
+        else:
+            # Generate chat response
+            res = {'answer': generateChatResponse(prompt)}
 
-        # Check if it's a new day to reset the prompt count
-        today = datetime.now().strftime("%Y-%m-%d")
-        if last_prompt_date != today:
-            prompt_count = 0
-            db.child("users").child(user_uid).update({"prompt_count_db": prompt_count, "last_prompt_date": today})
+        # Increment prompt count and set cookie
+        prompt_count += 1
+        response = make_response(jsonify(res), 200)
+        response.set_cookie('prompt_count', str(prompt_count))
 
-        # Check if the user has exceeded the daily limit
-        if prompt_count >= 1000 and not check_subscription_status(subscription_code):
-            return jsonify({'answer': "NOTIFICATION!: Sorry, you've hit your daily free message limit, or your subscription has expired. <a href='https://akposai.onrender.com/payment'>Click here to continue with a weekly or monthly plan</a>, or check back tomorrow for another free trial."}), 200
-        if prompt_count >= 1000 and check_subscription_status(subscription_code):
-            response_text = generateChatResponse(prompt)
-            new_prompt_count = prompt_count + 1
-            db.child("users").child(user_uid).update({"prompt_count_db": new_prompt_count, "last_prompt_date": today})
-            return jsonify({'answer': response_text}), 200
+        return response
 
-        # Generate the chat response and increment the prompt count
-        response_text = generateChatResponse(prompt)
-        new_prompt_count = prompt_count + 1
-        db.child("users").child(user_uid).update({"prompt_count_db": new_prompt_count, "last_prompt_date": today})
-
-        return jsonify({'answer': response_text}), 200
-
+    # Render template for GET requests
     return render_template('rexhtml.html')
 
 
