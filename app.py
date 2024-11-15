@@ -381,8 +381,8 @@ def generateChatResponse(question):
 
 @app.route('/presiginchatbot', methods=['POST', 'GET'])
 def presigninrex():
-    if not session.get("is_logged_in", False):
-        return redirect(url_for('login'))
+    #if not session.get("is_logged_in", False):
+        #return redirect(url_for('login'))
 
     if request.method == 'POST':
         prompt = request.form['prompt']
@@ -408,7 +408,7 @@ def presigninrex():
         response.set_cookie('prompt_count', str(new_prompt_count), max_age=24*60*60)  # Cookie expires in 1 day
 
         # Show notification if prompt count reaches 10
-        if new_prompt_count == 10:
+        if new_prompt_count == 3:
             res['notification'] = "You have reached the limit of 10 prompts. Please consider upgrading your access for more features."
 
         return response
