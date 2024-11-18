@@ -97,7 +97,7 @@ def home():
     if session.get("is_logged_in", False):
         return render_template("index.html", email=session["email"], name=session["name"])
     else:
-        return redirect(url_for('welcome'))
+        return redirect(url_for('presignuprex'))
 
 def check_password_strength(password):
     return re.match(r'^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,}$', password) is not None
@@ -203,6 +203,8 @@ email_for_paystack=""
 
 @app.route('/payment', methods=['POST', 'GET'])
 def payment():
+    if not session.get("is_logged_in", False):
+        return redirect(url_for('presignuprex'))
     global email_for_paystack
     usr_uid = session['uid']
     email_for_paystack= db.child("users").child(usr_uid).child("email").get().val()
@@ -436,7 +438,7 @@ def rex():
     subscription_code = subscription_code_from_email
 
     if not session.get("is_logged_in", False):
-        return redirect(url_for('welcome'))
+        return redirect(url_for('presignuprex'))
 
     if request.method == 'POST':
         prompt = request.form['prompt']
