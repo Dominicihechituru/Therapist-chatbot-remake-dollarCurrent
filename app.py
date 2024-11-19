@@ -397,7 +397,7 @@ def presignuprex():
 
         # Check prompt count
         if prompt_count >= 5:
-            res = {'answer': "3 prompts completed"}
+            res = {'answer': "Please signup to continue chatting with Akpos AI by <a href='http://akposai.onrender.com/welcome'>Clicking here</a>"}
         else:
             try:
                 # Generate chat response
