@@ -396,7 +396,7 @@ def presignuprex():
         prompt = request.form['prompt']
 
         # Check prompt count
-        if prompt_count >= 10:
+        if prompt_count >= 5:
             res = {'answer': "3 prompts completed"}
         else:
             try:
