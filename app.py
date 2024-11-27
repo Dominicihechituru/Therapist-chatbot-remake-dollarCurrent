@@ -7,7 +7,8 @@ import requests
 import replicate
 
 my_secret = os.environ['token']
-my_secret2 = os.environ['pidginprompt']
+#my_secret2 = os.environ['pidginprompt']
+my_secret2 = os.environ['funnyengprompt']
 #mybestcontextprompt = "You are an empathetic AI"
 
 #openai.api_key = my_secret
