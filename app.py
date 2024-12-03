@@ -398,7 +398,7 @@ def presignuprex():
 
         # Check prompt count
         if prompt_count >= 5:
-            res = {'answer': "Please signup to continue chatting with Joe by clicking <a href='http://akposai.onrender.com/signup'> HERE.</a> Signup is free!"}
+            res = {'answer': "Please signup to continue chatting with Joe by clicking <a href='http://joeai.onrender.com/signup'> HERE.</a> Signup is free!"}
         else:
             try:
                 # Generate chat response
