@@ -463,7 +463,7 @@ def rex():
 
         # Check if the user has exceeded the daily limit
         if prompt_count >= 1000 and not check_subscription_status(subscription_code):
-            return jsonify({'answer': "NOTIFICATION!: Sorry, you've hit your daily free message limit, or your subscription has expired. <a href='https://akposai.onrender.com/payment'>Click here to continue with a weekly or monthly plan</a>, or check back tomorrow for another free trial."}), 200
+            return jsonify({'answer': "NOTIFICATION!: Sorry, you've hit your daily free message limit, or your subscription has expired. <a href='https://joeai.onrender.com/payment'>Click here to continue with a weekly or monthly plan</a>, or check back tomorrow for another free trial."}), 200
         if prompt_count >= 1000 and check_subscription_status(subscription_code):
             response_text = generateChatResponse(prompt)
             new_prompt_count = prompt_count + 1
