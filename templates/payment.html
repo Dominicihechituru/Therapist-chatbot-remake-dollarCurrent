@@ -78,7 +78,7 @@
 <body>
     <!-- Add an image at the top, centered --
     <img src="your-image-url-here.jpg" alt="Top Image">
--->
+--
 <h2 style="color: navyblue;">Subscription for Joe AI<br> <h5 style="padding: 0px; margin: 0px; color:gray;">A product of Cazmir Tech</h5> </h2>
     
 
@@ -240,72 +240,80 @@
 
     <script src="https://js.paystack.co/v1/inline.js"></script>
     <script type="text/javascript">
-        function modifyPopupText() {
-            // Observe changes in the body to detect Paystack popup
-            const observer = new MutationObserver(() => {
-                const popup = document.querySelector('.paystack-popup'); // Paystack popup class
-                if (popup) {
-                    // Replace 'NGN 3,999' with 'USD 3,999'
-                    const priceText = popup.querySelector("span, p, div"); // Adjust based on Paystack's popup structure
-                    if (priceText && priceText.textContent.includes("NGN 3,999")) {
-                        priceText.textContent = priceText.textContent.replace("NGN 3,999", "USD 3,999");
+    function modifyPopupText() {
+        // Set an interval to periodically check for the Paystack popup
+        const interval = setInterval(() => {
+            // Select the Paystack popup container
+            const popup = document.querySelector('.paystack-popup');
+            if (popup) {
+                // Look for all text nodes that may contain "NGN"
+                const elements = popup.querySelectorAll('*');
+                elements.forEach((el) => {
+                    if (el.textContent.includes('NGN 3,999')) {
+                        // Replace NGN with USD in the content
+                        el.textContent = el.textContent.replace('NGN 3,999', 'USD 3,999');
                     }
-                }
-            });
+                });
 
-            // Start observing
-            observer.observe(document.body, { childList: true, subtree: true });
-        }
+                // Clear the interval once the replacement is done
+                clearInterval(interval);
+            }
+        }, 500); // Check every 500ms
+    }
 
-        function payWithPaystackWeekly() {
-            var inputElement = document.getElementById("myInput");
-            var inputValue = inputElement.value;
+    function payWithPaystackWeekly() {
+        var inputElement = document.getElementById("myInput");
+        var inputValue = inputElement.value;
 
-            var handler = PaystackPop.setup({
-                key: 'pk_live_f877dcf59aacbbe7c948dfe0b6f30c5f491c5a25', 
-                email: inputValue,
-                first_name: 'User',
-                amount: 899900, // Amount in kobo (3,999 naira)
-                plan: "PLN_d8tygpro75uftye",
-                currency: 'USD',
-                ref: '' + Math.floor((Math.random() * 1000000000) + 1),
+        var handler = PaystackPop.setup({
+            key: 'pk_live_f877dcf59aacbbe7c948dfe0b6f30c5f491c5a25',
+            email: inputValue,
+            first_name: 'User',
+            amount: 899900, // Amount in kobo (3,999 naira)
+            plan: "PLN_d8tygpro75uftye",
+            currency: 'USD',
+            ref: '' + Math.floor((Math.random() * 1000000000) + 1),
 
-                callback: function (response) {
-                    console.log(response);
-                    window.location.href = "/chatbot";
-                },
-                onClose: function () {
-                    alert('Transaction was not completed.');
-                }
-            });
-            handler.openIframe();
-            modifyPopupText();
-        }
+            callback: function (response) {
+                console.log(response);
+                window.location.href = "/chatbot";
+            },
+            onClose: function () {
+                alert('Transaction was not completed.');
+            }
+        });
 
-        function payWithPaystackMonthly() {
-            var inputElement = document.getElementById("myInput");
-            var inputValue = inputElement.value;
+        // Open Paystack iframe and attempt to modify popup
+        handler.openIframe();
+        modifyPopupText();
+    }
 
-            var handler = PaystackPop.setup({
-                key: 'pk_live_f877dcf59aacbbe7c948dfe0b6f30c5f491c5a25',
-                email: inputValue,
-                first_name: 'User',
-                amount: 1499900,
-                plan: "PLN_7uwk0q97jp9igju",
-                ref: '' + Math.floor((Math.random() * 1000000000) + 1),
+    function payWithPaystackMonthly() {
+        var inputElement = document.getElementById("myInput");
+        var inputValue = inputElement.value;
 
-                callback: function (response) {
-                    console.log(response);
-                    window.location.href = "/chatbot";
-                },
-                onClose: function () {
-                    alert('Transaction was not completed.');
-                }
-            });
-            handler.openIframe();
-            modifyPopupText();
-        }
-    </script>
+        var handler = PaystackPop.setup({
+            key: 'pk_live_f877dcf59aacbbe7c948dfe0b6f30c5f491c5a25',
+            email: inputValue,
+            first_name: 'User',
+            amount: 1499900, // Amount in kobo (14,999 naira)
+            plan: "PLN_7uwk0q97jp9igju",
+            ref: '' + Math.floor((Math.random() * 1000000000) + 1),
+
+            callback: function (response) {
+                console.log(response);
+                window.location.href = "/chatbot";
+            },
+            onClose: function () {
+                alert('Transaction was not completed.');
+            }
+        });
+
+        // Open Paystack iframe and attempt to modify popup
+        handler.openIframe();
+        modifyPopupText();
+    }
+</script>
 </body>
 </html>
 
