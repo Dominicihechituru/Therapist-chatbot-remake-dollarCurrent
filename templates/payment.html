@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!--<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -96,7 +96,7 @@
         </div>
 -->
         
-        <!-- Second card -->
+        <!-- Second card --
         <div class="card">
             <h3>Weekly Subscription <h4>(Unlimited chat for 1 week)</h4> </h3>
             
@@ -104,7 +104,7 @@
             <button type="button" onclick="payWithPaystackWeekly()">Pay</button>
         </div>
 
-        <!-- Thord card -->
+        <!-- Thord card --
         <div class="card">
             <h3>Monthly Subscription <h4>(Unlimited chat for 1 month)</h4> </h3>
             
@@ -202,6 +202,109 @@
         });
         handler.openIframe();
       }
+    </script>
+</body>
+</html>-->
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment</title>
+    <style>
+        /* Existing styles remain unchanged */
+    </style>
+</head>
+<body>
+    <h2 style="color: navyblue;">Subscription for Joe AI<br> <h5 style="padding: 0px; margin: 0px; color:gray;">A product of Cazmir Tech</h5> </h2>
+
+    <div class="container">
+        <input id="myInput" style="visibility: hidden" value="{{email}}">
+
+        <div class="card">
+            <h3>Weekly Subscription <h4>(Unlimited chat for 1 week)</h4></h3>
+            <h2>₦3,999</h2>
+            <button type="button" onclick="payWithPaystackWeekly()">Pay</button>
+        </div>
+
+        <div class="card">
+            <h3>Monthly Subscription <h4>(Unlimited chat for 1 month)</h4></h3>
+            <h2>₦14,999</h2>
+            <button type="button" onclick="payWithPaystackMonthly()">Pay</button>
+        </div>
+    </div>
+
+    <script src="https://js.paystack.co/v1/inline.js"></script>
+    <script type="text/javascript">
+        function modifyPopupText() {
+            // Observe changes in the body to detect Paystack popup
+            const observer = new MutationObserver(() => {
+                const popup = document.querySelector('.paystack-popup'); // Paystack popup class
+                if (popup) {
+                    // Replace 'NGN 3,999' with 'USD 3,999'
+                    const priceText = popup.querySelector("span, p, div"); // Adjust based on Paystack's popup structure
+                    if (priceText && priceText.textContent.includes("NGN 3,999")) {
+                        priceText.textContent = priceText.textContent.replace("NGN 3,999", "USD 3,999");
+                    }
+                }
+            });
+
+            // Start observing
+            observer.observe(document.body, { childList: true, subtree: true });
+        }
+
+        function payWithPaystackWeekly() {
+            var inputElement = document.getElementById("myInput");
+            var inputValue = inputElement.value;
+
+            var handler = PaystackPop.setup({
+                key: 'pk_live_f877dcf59aacbbe7c948dfe0b6f30c5f491c5a25', 
+                email: inputValue,
+                first_name: 'User',
+                amount: 899900, // Amount in kobo (3,999 naira)
+                plan: "PLN_d8tygpro75uftye",
+                currency: 'USD',
+                ref: '' + Math.floor((Math.random() * 1000000000) + 1),
+
+                callback: function (response) {
+                    console.log(response);
+                    window.location.href = "/chatbot";
+                },
+                onClose: function () {
+                    alert('Transaction was not completed.');
+                }
+            });
+            handler.openIframe();
+            modifyPopupText();
+        }
+
+        function payWithPaystackMonthly() {
+            var inputElement = document.getElementById("myInput");
+            var inputValue = inputElement.value;
+
+            var handler = PaystackPop.setup({
+                key: 'pk_live_f877dcf59aacbbe7c948dfe0b6f30c5f491c5a25',
+                email: inputValue,
+                first_name: 'User',
+                amount: 1499900,
+                plan: "PLN_7uwk0q97jp9igju",
+                ref: '' + Math.floor((Math.random() * 1000000000) + 1),
+
+                callback: function (response) {
+                    console.log(response);
+                    window.location.href = "/chatbot";
+                },
+                onClose: function () {
+                    alert('Transaction was not completed.');
+                }
+            });
+            handler.openIframe();
+            modifyPopupText();
+        }
     </script>
 </body>
 </html>
