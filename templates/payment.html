@@ -154,8 +154,9 @@
           key: 'pk_live_f877dcf59aacbbe7c948dfe0b6f30c5f491c5a25', // Replace with your Paystack public key
           email: inputValue,
           first_name: 'User',
-          amount: 399900, // Amount in kobo (3,999 naira)
+          amount: 899900, // Amount in kobo (3,999 naira)
           plan: "PLN_d8tygpro75uftye",
+          currency:'USD',
           ref: ''+Math.floor((Math.random() * 1000000000) + 1), // Transaction reference
 
           callback: function(response){
