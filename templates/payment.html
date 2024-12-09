@@ -207,111 +207,87 @@
 </html>-->
 
 
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Payment</title>
-    <style>
-        /* Existing styles remain unchanged */
-    </style>
-</head>
+    </head>
 <body>
-    <h2 style="color: navyblue;">Subscription for Joe AI<br> <h5 style="padding: 0px; margin: 0px; color:gray;">A product of Cazmir Tech</h5> </h2>
+<form id="paymentForm">
+    <h3>Payment Details</h3>
+    <label for="email">Email</label>
+    <input type="email" id="email" placeholder="Enter your email" required />
 
-    <div class="container">
-        <input id="myInput" style="visibility: hidden" value="{{email}}">
+    <label for="amount">Amount (USD)</label>
+    <input type="number" id="amount" value="3999" disabled />
 
-        <div class="card">
-            <h3>Weekly Subscription <h4>(Unlimited chat for 1 week)</h4></h3>
-            <h2>₦3,999</h2>
-            <button type="button" onclick="payWithPaystackWeekly()">Pay</button>
-        </div>
+    <label for="cardNumber">Card Number</label>
+    <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" required />
 
-        <div class="card">
-            <h3>Monthly Subscription <h4>(Unlimited chat for 1 month)</h4></h3>
-            <h2>₦14,999</h2>
-            <button type="button" onclick="payWithPaystackMonthly()">Pay</button>
-        </div>
-    </div>
+    <label for="expiryMonth">Expiry Month</label>
+    <input type="text" id="expiryMonth" placeholder="MM" required />
 
-    <script src="https://js.paystack.co/v1/inline.js"></script>
-    <script type="text/javascript">
-    function modifyPopupText() {
-        // Set an interval to periodically check for the Paystack popup
-        const interval = setInterval(() => {
-            // Select the Paystack popup container
-            const popup = document.querySelector('.paystack-popup');
-            if (popup) {
-                // Look for all text nodes that may contain "NGN"
-                const elements = popup.querySelectorAll('*');
-                elements.forEach((el) => {
-                    if (el.textContent.includes('NGN 3,999')) {
-                        // Replace NGN with USD in the content
-                        el.textContent = el.textContent.replace('NGN 3,999', 'USD 3,999');
-                    }
+    <label for="expiryYear">Expiry Year</label>
+    <input type="text" id="expiryYear" placeholder="YY" required />
+
+    <label for="cvv">CVV</label>
+    <input type="text" id="cvv" placeholder="123" required />
+
+    <button type="button" onclick="handlePayment()">Pay USD 3,999</button>
+</form>
+
+<script>
+    async function handlePayment() {
+        // Gather input values
+        const email = document.getElementById("email").value;
+        const amount = 399900; // Amount in kobo (e.g., $3,999 = 3999 * 100 kobo)
+        const cardNumber = document.getElementById("cardNumber").value;
+        const expiryMonth = document.getElementById("expiryMonth").value;
+        const expiryYear = document.getElementById("expiryYear").value;
+        const cvv = document.getElementById("cvv").value;
+
+        try {
+            // Step 1: Initialize the transaction
+            const initResponse = await fetch('/initialize-payment', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, amount }),
+            });
+            const initData = await initResponse.json();
+
+            if (initData.status) {
+                const authUrl = initData.data.authorization_url;
+
+                // Step 2: Charge the card
+                const chargeResponse = await fetch('/charge-card', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        reference: initData.data.reference,
+                        card: {
+                            number: cardNumber,
+                            cvv,
+                            expiry_month: expiryMonth,
+                            expiry_year: expiryYear,
+                        },
+                    }),
                 });
+                const chargeData = await chargeResponse.json();
 
-                // Clear the interval once the replacement is done
-                clearInterval(interval);
+                if (chargeData.status) {
+                    alert("Payment successful!");
+                } else {
+                    alert(`Payment failed: ${chargeData.message}`);
+                }
+            } else {
+                alert(`Initialization failed: ${initData.message}`);
             }
-        }, 500); // Check every 500ms
-    }
-
-    function payWithPaystackWeekly() {
-        var inputElement = document.getElementById("myInput");
-        var inputValue = inputElement.value;
-
-        var handler = PaystackPop.setup({
-            key: 'pk_live_f877dcf59aacbbe7c948dfe0b6f30c5f491c5a25',
-            email: inputValue,
-            first_name: 'User',
-            amount: 899900, // Amount in kobo (3,999 naira)
-            plan: "PLN_d8tygpro75uftye",
-            currency: 'USD',
-            ref: '' + Math.floor((Math.random() * 1000000000) + 1),
-
-            callback: function (response) {
-                console.log(response);
-                window.location.href = "/chatbot";
-            },
-            onClose: function () {
-                alert('Transaction was not completed.');
-            }
-        });
-
-        // Open Paystack iframe and attempt to modify popup
-        handler.openIframe();
-        modifyPopupText();
-    }
-
-    function payWithPaystackMonthly() {
-        var inputElement = document.getElementById("myInput");
-        var inputValue = inputElement.value;
-
-        var handler = PaystackPop.setup({
-            key: 'pk_live_f877dcf59aacbbe7c948dfe0b6f30c5f491c5a25',
-            email: inputValue,
-            first_name: 'User',
-            amount: 1499900, // Amount in kobo (14,999 naira)
-            plan: "PLN_7uwk0q97jp9igju",
-            ref: '' + Math.floor((Math.random() * 1000000000) + 1),
-
-            callback: function (response) {
-                console.log(response);
-                window.location.href = "/chatbot";
-            },
-            onClose: function () {
-                alert('Transaction was not completed.');
-            }
-        });
-
-        // Open Paystack iframe and attempt to modify popup
-        handler.openIframe();
-        modifyPopupText();
+        } catch (error) {
+            console.error("Payment error:", error);
+            alert("An error occurred during payment.");
+        }
     }
 </script>
 </body>
