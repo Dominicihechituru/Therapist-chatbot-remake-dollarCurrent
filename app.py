@@ -236,6 +236,61 @@ def check_subscription_status(subscription_code):
             return False
     return False
 
+
+#*****CUSTOM PAYSTACK*******
+
+
+#PAYSTACK_SECRET_KEY = "sk_live_your_secret_key_here"
+
+@app.route('/initialize-payment', methods=['POST'])
+def initialize_payment():
+    data = request.json
+    email = data['email']
+    amount = data['amount']
+    plan = data['plan']
+
+    headers = {
+        "Authorization": f"Bearer sk_live_ca56f5de9a6ec2553c20792cfa92d61f8a2a815c",
+        "Content-Type": "application/json"
+    }
+    payload = {
+        "email": email,
+        "amount": amount,
+        "currency": "USD",
+        "plan": plan,  # Include the plan here
+    }
+
+    response = requests.post("https://api.paystack.co/transaction/initialize", json=payload, headers=headers)
+    return jsonify(response.json())
+
+@app.route('/charge-card', methods=['POST'])
+def charge_card():
+    data = request.json
+    reference = data['reference']
+    card = data['card']
+
+    headers = {
+        "Authorization": f"Bearer sk_live_ca56f5de9a6ec2553c20792cfa92d61f8a2a815c",
+        "Content-Type": "application/json"
+    }
+    payload = {
+        "reference": reference,
+        "card": card
+    }
+
+    response = requests.post("https://api.paystack.co/charge", json=payload, headers=headers)
+    return jsonify(response.json())
+
+if __name__ == '__main__':
+    app.run(debug=True)
+
+
+
+#*******END OF CUSTOM PAYSTACK******
+
+
+
+
 '''
 conversation_history = [{"role": "system", "content": my_secret2}]
 
