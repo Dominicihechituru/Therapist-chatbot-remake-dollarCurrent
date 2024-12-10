@@ -239,22 +239,26 @@
     </form>
 
     <script>
-        async function handlePayment() {
-    // Gather input values
-    const email = document.getElementById("email").value;  // Required email field
-    const amount = 399900; // Amount in kobo (3,999 USD)
-    const plan = "PLN_d8tygpro75uftye"; // Replace with your plan code
+        function generateUniqueReference() {
+    return 'REF_' + Math.random().toString(36).substring(2, 15) + Date.now().toString(36);
+}
+
+async function handlePayment() {
+    const email = document.getElementById("email").value;
+    const amount = 399900; // Amount in kobo (for USD 3,999)
+    const plan = "PLN_d8tygpro75uftye";
     const cardNumber = document.getElementById("cardNumber").value;
     const expiryMonth = document.getElementById("expiryMonth").value;
     const expiryYear = document.getElementById("expiryYear").value;
     const cvv = document.getElementById("cvv").value;
+    const reference = generateUniqueReference(); // Generate reference on frontend
 
     try {
         // Step 1: Initialize the transaction
         const initResponse = await fetch('/initialize-payment', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, amount, plan }),
+            body: JSON.stringify({ email, amount, plan, reference }),
         });
         const initData = await initResponse.json();
 
@@ -264,8 +268,9 @@
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    reference: initData.data.reference,
-                    email, // Ensure email is sent here
+                    reference, // Use the same reference here
+                    email,
+                    amount,
                     card: {
                         number: cardNumber,
                         cvv,
