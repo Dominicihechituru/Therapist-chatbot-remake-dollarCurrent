@@ -212,86 +212,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Payment</title>
-    </head>
+    <title>Paystack Payment</title>
+</head>
 <body>
-<form id="paymentForm">
-    <h3>Payment Details</h3>
-    <label for="email">Email</label>
-    <input type="email" id="email" placeholder="Enter your email" required />
+    <h3>Paystack Payment</h3>
+    <form id="paymentForm">
+        <label for="email">Email</label>
+        <input type="email" id="email" placeholder="Enter your email" required />
 
-    <label for="amount">Amount (USD)</label>
-    <input type="number" id="amount" value="3999" disabled />
+        <label for="amount">Amount (USD)</label>
+        <input type="number" id="amount" value="3999" disabled />
 
-    <label for="cardNumber">Card Number</label>
-    <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" required />
+        <label for="cardNumber">Card Number</label>
+        <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" required />
 
-    <label for="expiryMonth">Expiry Month</label>
-    <input type="text" id="expiryMonth" placeholder="MM" required />
+        <label for="expiryMonth">Expiry Month</label>
+        <input type="text" id="expiryMonth" placeholder="MM" required />
 
-    <label for="expiryYear">Expiry Year</label>
-    <input type="text" id="expiryYear" placeholder="YY" required />
+        <label for="expiryYear">Expiry Year</label>
+        <input type="text" id="expiryYear" placeholder="YY" required />
 
-    <label for="cvv">CVV</label>
-    <input type="text" id="cvv" placeholder="123" required />
+        <label for="cvv">CVV</label>
+        <input type="text" id="cvv" placeholder="123" required />
 
-    <button type="button" onclick="handlePayment()">Pay USD 3,999</button>
-</form>
+        <button type="button" onclick="handlePayment()">Pay USD 3,999</button>
+    </form>
 
-<script>
-    async function handlePayment() {
-        // Gather input values
-        const email = document.getElementById("email").value;
-        const amount = 399900; // Amount in kobo (e.g., $3,999 = 3999 * 100 kobo)
-        const cardNumber = document.getElementById("cardNumber").value;
-        const expiryMonth = document.getElementById("expiryMonth").value;
-        const expiryYear = document.getElementById("expiryYear").value;
-        const cvv = document.getElementById("cvv").value;
+    <script>
+        async function handlePayment() {
+            // Gather input values
+            const email = document.getElementById("email").value;
+            const amount = 399900; // Amount in kobo (e.g., $3,999 = 3999 * 100 kobo)
+            const plan = "PLN_d8tygpro75uftye"; // Replace with your plan code
+            const cardNumber = document.getElementById("cardNumber").value;
+            const expiryMonth = document.getElementById("expiryMonth").value;
+            const expiryYear = document.getElementById("expiryYear").value;
+            const cvv = document.getElementById("cvv").value;
 
-        try {
-            // Step 1: Initialize the transaction
-            const initResponse = await fetch('/initialize-payment', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, amount }),
-            });
-            const initData = await initResponse.json();
-
-            if (initData.status) {
-                const authUrl = initData.data.authorization_url;
-
-                // Step 2: Charge the card
-                const chargeResponse = await fetch('/charge-card', {
+            try {
+                // Step 1: Initialize the transaction
+                const initResponse = await fetch('/initialize-payment', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        reference: initData.data.reference,
-                        card: {
-                            number: cardNumber,
-                            cvv,
-                            expiry_month: expiryMonth,
-                            expiry_year: expiryYear,
-                        },
-                    }),
+                    body: JSON.stringify({ email, amount, plan }),
                 });
-                const chargeData = await chargeResponse.json();
+                const initData = await initResponse.json();
 
-                if (chargeData.status) {
-                    alert("Payment successful!");
+                if (initData.status) {
+                    // Step 2: Charge the card
+                    const chargeResponse = await fetch('/charge-card', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            reference: initData.data.reference,
+                            card: {
+                                number: cardNumber,
+                                cvv,
+                                expiry_month: expiryMonth,
+                                expiry_year: expiryYear,
+                            },
+                        }),
+                    });
+                    const chargeData = await chargeResponse.json();
+
+                    if (chargeData.status) {
+                        alert("Payment successful!");
+                    } else {
+                        alert(`Payment failed: ${chargeData.message}`);
+                    }
                 } else {
-                    alert(`Payment failed: ${chargeData.message}`);
+                    alert(`Initialization failed: ${initData.message}`);
                 }
-            } else {
-                alert(`Initialization failed: ${initData.message}`);
+            } catch (error) {
+                console.error("Payment error:", error);
+                alert("An error occurred during payment.");
             }
-        } catch (error) {
-            console.error("Payment error:", error);
-            alert("An error occurred during payment.");
         }
-    }
-</script>
+    </script>
 </body>
 </html>
-
-
-        
