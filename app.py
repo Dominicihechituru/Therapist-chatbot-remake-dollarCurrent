@@ -267,6 +267,7 @@ def initialize_payment():
 def charge_card():
     data = request.json
     reference = data['reference']
+    email = data['email']  # Include the email here
     card = data['card']
 
     headers = {
@@ -274,13 +275,18 @@ def charge_card():
         "Content-Type": "application/json"
     }
     payload = {
+        "email": email,  # Add email in the charge request
         "reference": reference,
-        "card": card
+        "card": {
+            "number": card['number'],
+            "cvv": card['cvv'],
+            "expiry_month": card['expiry_month'],
+            "expiry_year": card['expiry_year'],
+        }
     }
 
     response = requests.post("https://api.paystack.co/charge", json=payload, headers=headers)
     return jsonify(response.json())
-
 
 
 
