@@ -256,7 +256,7 @@ def initialize_payment():
     payload = {
         "email": email,
         "amount": amount,
-        "currency": "USD",
+        "currency": "NGN",
         "plan": plan,  # Include the plan here
     }
 
@@ -281,8 +281,6 @@ def charge_card():
     response = requests.post("https://api.paystack.co/charge", json=payload, headers=headers)
     return jsonify(response.json())
 
-if __name__ == '__main__':
-    app.run(debug=True)
 
 
 
