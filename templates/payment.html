@@ -240,54 +240,55 @@
 
     <script>
         async function handlePayment() {
-            // Gather input values
-            const email = document.getElementById("email").value;
-            const amount = 399900; // Amount in kobo (e.g., $3,999 = 3999 * 100 kobo)
-            const plan = "PLN_d8tygpro75uftye"; // Replace with your plan code
-            const cardNumber = document.getElementById("cardNumber").value;
-            const expiryMonth = document.getElementById("expiryMonth").value;
-            const expiryYear = document.getElementById("expiryYear").value;
-            const cvv = document.getElementById("cvv").value;
+    // Gather input values
+    const email = document.getElementById("email").value;  // Required email field
+    const amount = 399900; // Amount in kobo (3,999 USD)
+    const plan = "PLN_d8tygpro75uftye"; // Replace with your plan code
+    const cardNumber = document.getElementById("cardNumber").value;
+    const expiryMonth = document.getElementById("expiryMonth").value;
+    const expiryYear = document.getElementById("expiryYear").value;
+    const cvv = document.getElementById("cvv").value;
 
-            try {
-                // Step 1: Initialize the transaction
-                const initResponse = await fetch('/initialize-payment', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, amount, plan }),
-                });
-                const initData = await initResponse.json();
+    try {
+        // Step 1: Initialize the transaction
+        const initResponse = await fetch('/initialize-payment', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, amount, plan }),
+        });
+        const initData = await initResponse.json();
 
-                if (initData.status) {
-                    // Step 2: Charge the card
-                    const chargeResponse = await fetch('/charge-card', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            reference: initData.data.reference,
-                            card: {
-                                number: cardNumber,
-                                cvv,
-                                expiry_month: expiryMonth,
-                                expiry_year: expiryYear,
-                            },
-                        }),
-                    });
-                    const chargeData = await chargeResponse.json();
+        if (initData.status) {
+            // Step 2: Charge the card
+            const chargeResponse = await fetch('/charge-card', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    reference: initData.data.reference,
+                    email, // Ensure email is sent here
+                    card: {
+                        number: cardNumber,
+                        cvv,
+                        expiry_month: expiryMonth,
+                        expiry_year: expiryYear,
+                    },
+                }),
+            });
+            const chargeData = await chargeResponse.json();
 
-                    if (chargeData.status) {
-                        alert("Payment successful!");
-                    } else {
-                        alert(`Payment failed: ${chargeData.message}`);
-                    }
-                } else {
-                    alert(`Initialization failed: ${initData.message}`);
-                }
-            } catch (error) {
-                console.error("Payment error:", error);
-                alert("An error occurred during payment.");
+            if (chargeData.status) {
+                alert("Payment successful!");
+            } else {
+                alert(`Payment failed: ${chargeData.message}`);
             }
+        } else {
+            alert(`Initialization failed: ${initData.message}`);
         }
+    } catch (error) {
+        console.error("Payment error:", error);
+        alert("An error occurred during payment.");
+    }
+}
     </script>
 </body>
 </html>
