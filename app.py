@@ -311,7 +311,7 @@ def charge_card():
     payload = {
         "email": email,  # Add email in the charge request
         "reference": reference,
-        "amount": "3999",
+        "amount": "399900",
         "card": {
             "number": card['number'],
             "cvv": card['cvv'],
