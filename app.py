@@ -5,6 +5,8 @@ import os
 import re
 import requests
 import replicate
+import random
+import string
 
 my_secret = os.environ['token']
 #my_secret2 = os.environ['pidginprompt']
@@ -242,6 +244,38 @@ def check_subscription_status(subscription_code):
 
 #PAYSTACK_SECRET_KEY = "sk_live_your_secret_key_here"
 
+
+
+def generate_reference():
+    """Generate a unique transaction reference."""
+    return ''.join(random.choices(string.ascii_letters + string.digits, k=16))
+
+@app.route('/initialize-payment', methods=['POST'])
+def initialize_payment():
+    data = request.json
+    email = data['email']
+    amount = data['amount']
+    plan = data['plan']
+
+    unique_reference = generate_reference()  # Generate a new reference
+
+    headers = {
+        "Authorization": f"Bearer sk_live_ca56f5de9a6ec2553c20792cfa92d61f8a2a815c",
+        "Content-Type": "application/json"
+    }
+    payload = {
+        "email": email,
+        "amount": amount,
+        "currency": "NGN",
+        "plan": plan,
+        "reference": unique_reference,  # Use the generated reference
+    }
+
+    response = requests.post("https://api.paystack.co/transaction/initialize", json=payload, headers=headers)
+    return jsonify(response.json())
+
+'''
+
 @app.route('/initialize-payment', methods=['POST'])
 def initialize_payment():
     data = request.json
@@ -262,7 +296,7 @@ def initialize_payment():
 
     response = requests.post("https://api.paystack.co/transaction/initialize", json=payload, headers=headers)
     return jsonify(response.json())
-
+'''
 @app.route('/charge-card', methods=['POST'])
 def charge_card():
     data = request.json
