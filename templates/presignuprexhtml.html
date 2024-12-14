@@ -193,6 +193,21 @@ alert("REX is still work in progress, please report any issues or irregularities
             }
         });
     });
+
+    // Code to refresh page
+    
+    // Wait for the page to fully load
+window.onload = function () {
+  // Set a timeout for 5 seconds (5000 milliseconds)
+  setTimeout(function () {
+    // Check if the page has already been refreshed
+    if (!sessionStorage.getItem('refreshed')) {
+      // Refresh the page
+      sessionStorage.setItem('refreshed', 'true');
+      location.reload();
+    }
+  }, 5000);
+};
 </script>
 
 
