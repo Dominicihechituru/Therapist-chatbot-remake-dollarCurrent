@@ -410,8 +410,8 @@ def generateChatResponse(prompt):
     }
 
     # Call the Replicate model API to get the response
-    #output = replicate.run("meta/meta-llama-3-70b-instruct", input=input_data)
-    output = replicate.run("meta/llama-2-7b-chat", input=input_data)
+    output = replicate.run("meta/meta-llama-3-70b-instruct", input=input_data)
+    #output = replicate.run("meta/llama-2-7b-chat", input=input_data)
     
 
     # Add the bot's response to the chat history
