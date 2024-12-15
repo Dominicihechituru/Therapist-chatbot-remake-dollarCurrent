@@ -293,7 +293,7 @@
     <script type="module">
       import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
       import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
-      //import { getDatabase } from "https://www.gstatic.com/firebasejs/9.17.2/firebase-database.js";
+      import { getDatabase } from "https://www.gstatic.com/firebasejs/9.17.2/firebase-database.js";
 
       const firebaseConfig = {
         'apiKey': "AIzaSyDa-iB8wmpcfIl6ZZ4tshr9-C0VaLjJDd4",
@@ -307,7 +307,7 @@
       };
 
       const app = initializeApp(firebaseConfig);
-      //const database = getDatabase(app);
+      const database = getDatabase(app);
       const auth = getAuth(app);
       const provider = new GoogleAuthProvider();
 
