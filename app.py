@@ -135,7 +135,7 @@ def result():
             return redirect(url_for('home'))
         else:
             return redirect(url_for('login'))
-
+'''
 @app.route("/register", methods=["POST", "GET"])
 def register():
     if request.method == "POST":
@@ -166,6 +166,42 @@ def register():
             return redirect(url_for('home'))
         else:
             return redirect(url_for('signup'))
+'''
+
+
+@app.route("/register", methods=["POST", "GET"])
+def register():
+    if request.method == "POST":
+        result = request.form
+        email = result["email"]
+        password = result["pass"]
+        name = result["name"]
+        if not check_password_strength(password):
+            print("Password does not meet strength requirements")
+            return redirect(url_for('signup'))
+        try:
+            auth.create_user_with_email_and_password(email, password)
+            user = auth.sign_in_with_email_and_password(email, password)
+            auth.send_email_verification(user['idToken'])
+            session["is_logged_in"] = True
+            session["email"] = user["email"]
+            session["uid"] = user["localId"]
+            session["name"] = name
+            session["prompt_count_db"] = 0
+            data = {"name": name, "email": email, "prompt_count_db": 0, "last_logged_in": datetime.now().strftime("%m/%d/%Y, %H:%M:%S")}
+            db.child("users").child(session["uid"]).set(data)
+            return render_template("verify_email.html")
+        except Exception as e:
+            print("Error occurred during registration: ", e)
+            return redirect(url_for('signup'))
+    else:
+        if session.get("is_logged_in", False):
+            return redirect(url_for('welcome'))
+        else:
+            return redirect(url_for('signup'))
+
+
+
 
 @app.route("/reset_password", methods=["GET", "POST"])
 def reset_password():
