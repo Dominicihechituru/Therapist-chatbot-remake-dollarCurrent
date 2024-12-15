@@ -178,7 +178,7 @@ def register():
         name = result["name"]
         if not check_password_strength(password):
             print("Password does not meet strength requirements")
-            return redirect(url_for('signup'))
+            return redirect(url_for('login'))
         try:
             auth.create_user_with_email_and_password(email, password)
             user = auth.sign_in_with_email_and_password(email, password)
@@ -193,12 +193,12 @@ def register():
             return render_template("verify_email.html")
         except Exception as e:
             print("Error occurred during registration: ", e)
-            return redirect(url_for('signup'))
+            return redirect(url_for('presignuprex'))
     else:
         if session.get("is_logged_in", False):
-            return redirect(url_for('welcome'))
+            return redirect(url_for('home'))
         else:
-            return redirect(url_for('signup'))
+            return redirect(url_for('welcome'))
 
 
 
